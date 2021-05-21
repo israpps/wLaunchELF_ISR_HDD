@@ -75,7 +75,7 @@ int getPartitionSector(char *partition)
 	if ((result = fileXioGetStat(partition, &statHDD)) >= 0)
 	{
 		partitionSector = statHDD.private_5;
-		scr_printf("Partition sector: %d \n", partitionSector);
+		//scr_printf("Partition sector: %d \n", partitionSector);
 	}
 
 	return result;

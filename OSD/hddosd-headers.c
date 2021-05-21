@@ -4,7 +4,7 @@
  * 							alexparrado (2021)  
  * hddosd-headers.c
  * ********************************************************************/
-
+#define NEWLIB_PORT_AWARE
 //Header files
 #include <stdio.h>
 #include <errno.h>

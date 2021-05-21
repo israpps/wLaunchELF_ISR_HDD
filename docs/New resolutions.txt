@@ -1,0 +1,73 @@
+-----------------------------------------------------------------------------
+File name:      New Resolutions.txt
+-----------------------------------------------------------------------------
+LaunchELF is now relying on gsKit to initialize the screen display parameters, rather than setting them directly.
+As such, the Screen_X and Screen_Y have been deprecated, in favour of Screen_Offset_X and Screen_Offset_Y.
+Unlike their predecessors, Screen_Offset_X and Screen_Offset_Y are relative to the display mode's X/Y offsets.
+They are also limited to this range:
+	-StartX <= Screen_Offset_X <= StartX
+	-StartY <= Screen_Offset_Y <= StartY
+Where StartX and StartY are the display mode offsets determined by gsKit.
+
+The Interlace option was deprecated, in favour of a true progressive mode.
+The Interlace option depended on a custom gsKit version, which halved the vertical height of the screen at the library level.
+Deprecating this option has allowed LaunchELF to use a vanilla copy of gsKit.
+
+-----------------------------------------------------------------------------
+The text below relates to an older version update, and is no longer valid.
+-----------------------------------------------------------------------------
+From version v3.81 and on uLaunchELF is using gsKit instead of libito to handle screen display, which has resulted in yet another increase of the screen resolution. As a result of this the old settings for screen offsets have yet again become invalid, but this time we have added a filter to the configuration loader, so that it can and will adapt old offset settings, when it recognizes that the configuration file was saved by an older version of the program. (When the CNF_version value in the file is less than 3.)
+
+Another big change in this version is that interlace mode is now default, and even mandatory, so non-interlace modes can no longer be set. (Would halve resolution...)
+
+In case you wish to edit the offsets yourself, the new defaults are as follows:
+
+NTSC with Interlace ON:
+Screen_X = 632
+Screen_Y = 50
+
+PAL with Interlace ON:
+Screen_X = 652
+Screen_Y = 72
+
+From version 3.84 the gsKit versions also support non-interlaced modes, and
+while these are not default, you may still find it useful to know that they
+use the following offsets to cover the same screen area (almost) as achieved
+in interlace modes using the settings that were described above:
+
+NTSC with Interlace OFF:
+Screen_X = 632
+Screen_Y = 26
+
+PAL with Interlace OFF:
+Screen_X = 652
+Screen_Y = 37
+
+-----------------------------------------------------------------------------
+The text below relates to an older version update, and is no longer valid.
+-----------------------------------------------------------------------------
+From version v3.58 and on uLaunchELF uses screen display routines that have been heavily modified compared to all previous versions, and now use a much higher resolution than any of them. Because of this the old defaults for screen offsets are no longer valid, and will need to be changed if you want to keep using CNF files from those old versions. Just transfer them to your PC, and edit the values of Screen_X and Screen_Y to the new defaults, as follows:
+
+NTSC with Interlace OFF:
+Screen_X = 158
+Screen_Y = 26
+
+NTSC with Interlace ON:
+Screen_X = 158
+Screen_Y = 50
+
+PAL with Interlace OFF:
+Screen_X = 163
+Screen_Y = 37
+
+PAL with Interlace ON:
+Screen_X = 163
+Screen_Y = 72
+
+If you don't want to bother with editing the CNFs you can also choose to erase them, as the new defaults will be used automatically if no CNF is found on startup.
+NB: That feature didn't work correctly in v3.58, but it does in all later versions.
+
+Best regards: Ronald Andersson (AKA: dlanor)
+-----------------------------------------------------------------------------
+End of file:    New Resolutions.txt
+-----------------------------------------------------------------------------

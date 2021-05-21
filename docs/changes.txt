@@ -1,0 +1,1009 @@
+Unofficial LaunchELF releases by EP + dlanor + various contributors
+
+LaunchELF wip7 (2014.04.06)
+-l_oliveira: Added message about HDL game unloading
+-Rewritten tutorial for compiling uLaunchelf. You need to specify $PS2SDKSRC (which is actually git repository) and run prepare_main.sh or restore_ps2sdk.sh.
+-fixed one warning in the libcdvd library
+-now all libraries will install into $PS2DEV
+-partially reverted hdd_manager - now it loads hdl_game partitions much (i mean MUCH MORE) faster (thanks to l_oliveira)
+-all source text files converted into linux format
+-returned special symbols like triangle, square etc.
+-now samba modules compile only when SMB flag is set (by default SMB = 0)
+-changed cdinit argument so now ule dont have to freeze with disc control on on SCPH-5xxxx
+-removed libjpg library, now is used the one from ps2sdk-ports
+-fixed some warnings in vmc
+-and of course everything is built with latest ps2sdk
+
+LaunchELF wip6 (2014.03.26)
+-crazycat: 64-bit support (files larger than 4Gb)
+-SP193: added support for disks larger than 1Tb
+-added full support for all partitions in HDD manager (except of __mbr partition):
+-you can rename any partition;
+-you can delete any partition except of partition started with "__" (it is PS2SDK feature);
+-returned support for codebreaker partition (don't forget that it can be broken);
+-now all partition recognized by partition flag (0x0001 - mbr, 0x1337 - HDL partition, 0x0100 - PFS partition)
+-if you press Square on HDL partition - you can load HDL info, if you press Square again - you can unload HDL info (it is needed for renaming HDL partition without reloading HDD manager);
+-you can expand only PFS partitions;
+-now uLe support official hdd loading path, after loading he mounts partitions from where it is loading into pfs0:/, so now you can simply load LAUNCHELF.CNF which is placed in the same place as uLe.
+ e.g. hdd0:/__sysconf/FMCB/
+-now you can load and save configuration files (including ipconfig.dat) from everywhere
+-you can place LAUNCHELF.CNF in the same folder where is uLe placed
+-if you inject it in partition header via PATINFO it now tries to read LAUNCHELF.CNF from the root of partition if it is in PFS format. If it is not pfs partition it tries to load it from hdd0:/__sysconf/FMCB/ (specially for l_oliveira)
+-fixed problem with "X" and "O" button swap
+-fully rewrote code for HDD manager. Tested with my 40Gb disk with 200 partitions.
+-now all partitions which names are started from "__" are browsable;
+-hide DELETE menu entry in HDD manager for partitions which are started from "__" (because PS2SDK has a bug - so these partitions cannot be removed)
+-now it is possible to launch uLe from mbr (thanks kHn for tests and providing mbrs)
+-used latest ps2sdk so problem with chinese adaptors and big disks is probably solved
+-removed 2Gb limit for single partition unit
+-now expand function works with all partitions
+-now we can create "__" partitions larger than 2Gb
+
+LaunchELF v4.42d (2013.03.24)
+-Fixed incomplete ps2sdk update in the prior version.
+-Updated ps2sdk and existing source files to github rev 912.
+
+LaunchELF v4.42c (2013.03.22)
+-Removed existing kernel patcher and kernel patch for v0 japanese consoles as a patch is currently available within newer ps2sdk versions on github.
+-Changed the preliminary SMB implementation to use latest ps2sdk smbman.
+-Updated ps2sdk and existing source files to github rev 911.
+
+LaunchELF v4.42b (2012.04.13)
+-Updated ps2sdk and existing source files from ps2dev SVN rev 1682 to github rev 891.
+
+LaunchELF v4.42a (2010.07.11)
+-Added subprogram MISC/OSDSYS to launch MC-based OSDSYS kelf (as used for FMCB). For most cases the default path should work with standard FMCB installations, but it is also possible to configure a user-defined path for it, so as to experiment with multiple such kelf files on the same MC.
+
+LaunchELF v4.42 (2010.06.12)
+-Added kernel patcher and kernel patch as designed by jimmikaelkael to make v0 japanese consoles compatible with newer models in use of homebrews. This cures v0 problems for many other applications too (including ESR) as the kernel remains patched for the duration of a session (until next hard reset/power on). This patching is compatible with that to be added into new versions of "Open PS2 Loader" too, and includes conflict protection when multiple patchers are used. This change has no effect at all on newer consoles, but was required to make it possible to keep the homebrew MC modules in future versions of uLE, and still retain uLE compatibility to all PS2 models.
+
+LaunchELF v4.41a (2010.06.03)
+-Fixed a problem with uLE initialization, causing problems with the new MC drivers when used on a PS2 of very old model. This change means that 'initsbv_patches' is now called early in 'loadBasicModules', and nowhere else.
+-Reinstated MC drivers by jimmikaelkael, and thus FileBrowser renaming on MCs
+-Added corrections by jimmikaelkael to the EE_SIO debug output module of ps2sdk
+-added the 'sior' module to uLE with changes in "makefile", "launchelf.h", "iopmod_name.h" and "main.c"
+-Added 'SIO_DEBUG' flag to "launchelf.h" for use only in compiling special debug versions of uLE, that use EE_SIO interface for debug feedback instead of PS2LINK
+(NB: This is required for debugging with oldest models, as PS2LINK won't work...)
+-Remerged all of the changes described for beta v4.40j described further below
+
+LaunchELF v4.41 (2010.05.30)
+-Updated ps2sdk and existing source files to SVN rev 1682.
+-Fixed some compiler warnings with the vmcfs driver due to changes in the latest ps2sdk revision.
+-Removed the modified screen update delay methods, restoring previous functionality.
+
+LaunchELF v4.40j (2010.05.29)
+-Added libcdvd_orig folder to CSD folder, so as to provide original libcvd source now that it is no longer available for download at ps2dev.org, and edited setup.sh accordingly so as to use the local copy.
+-Edited VMC sources to correct hundreds of incorrect references to "vmcfs" module which is in fact named "vmc_fs". This was mainly in 'DEBUGPRINT' error messages. This also required some editing of the main uLE source files.
+-Changed vmc_fs from being an 'uncheckable' module to being 'checkable' (changes in "main.c" and "iopmod_name.h")
+-Started work on merging smbman by jimmikaelkael into uLE
+-SMB routines now allow successful server connection, using a test menu inside the subprogram "MISC/Debug Info". Note that the SMB functionality requires a suitable "SMB.CNF" file stored as "mc0:/SYS-CONF/SMB.CNF"
+
+LaunchELF v4.40i (2010.04.09)
+-Updated ps2sdk and existing source files to SVN rev 1678 and removed a previous source file as it's no longer needed.
+-Updated the vmcfs driver with Polo35's changes to vmc_io.c in order to possibly fix virtual memorycard corruptions.
+ps2ftpd new additions and changes:
+-Added a fix to better resolve the hard drive compatibility issue with later ps2sdk updates.
+
+LaunchELF v4.40h (2010.02.12)
+-Modified screen update delay methods, so as to avoid freezing in PCSX2 use due to their incomplete implementation of EE timers.
+-Reverted to use MCMAN and MCSERV modules from bios, as required not only for compatibility to PCSX2, but also for compatibility to v0 PS2 consoles. 
+
+LaunchELF v4.40g (2010.02.09)
+-Updated gsKit and existing source files to SVN rev 1664.
+-Readapted and added a few changes back to the gsKit to resolve issues with non-interlace mode.
+-Fixed a compiler warning, do to a change with the newer ps2sdk, by changing the data type from "ee_thread_t" to "ee_thread_status_t" for the ReferThreadStatus prototype.
+
+LaunchELF v4.40f (2010.02.08)
+-Added preclearing of icon.sys struct buffer for "New Icon" command
+(Needed to avoid crashing Sony Browser of v0 PS2 consoles at showing such icons)
+-Emphasized warning of old partition destruction for HddManager Format command
+-Corrected gsKit coordinate rounding (for proper 'upside-down' JPG display)
+
+LaunchELF v4.40e (2010.01.26)
+-Modified load_ps2host function to eliminate 'stalling' of its network init, by adding a setupPowerOff() call before the load_ps2ip() call.
+
+LaunchELF v4.40d (2010.01.24)
+-Updated ps2sdk and existing source files to SVN rev 1663 after resolving a long-standing issue with the poweroff handler.
+-Fixed an issue that would have caused problems with ps2netFS and ps2ftpd network devices using newer ps2sdk versions.
+-Reorganized parts of the setup to build LaunchELF with newer versions of the ps2sdk.
+
+LaunchELF v4.40c (2009.10.13)
+-Special test version, reverting to MC drivers from bios instead of the new ones
+NB: This is only intended for temporary debug testing, not for wide distribution
+
+LaunchELF v4.40b (2009.09.14)
+ps2ftpd new additions and changes:
+-Forced memory card items to two, mc/0 and mc/1, in order to prevent the possible trigger of a buffer overflow noted by jimmikaelkaele for use with the new mc drivers.
+-Changed PFS items to only look for 4 mount points as before. This change was only made do to the earlier change of DEVICE_UNITS being set to ten for USB devices.
+-Fixed an issues that prevented PS1 memory cards from appearing in the listing with the new mc drivers. Now should work correctly for either driver.
+
+LaunchELF v4.40a (2009.09.13)
+-Modified gsGlobal usage at rez init and changes, to better follow standards
+-Merged EPs bugfix for FTP server's HDD mount bug, reverting it to SVN rev 371
+
+LaunchELF v4.40 (2009.09.08)
+-Reimplemented 'paddata', to allow button combos independent of debounce
+-Merged in a new mcman module by jimmikaelkael, fixing the FTP server bug
+
+LaunchELF v4.39aa beta (2009.08.24)
+-Fixed a weird 'strcat' bug that used to break TextEditor 'Save As...' pathname
+-Suppressed FileBrowser display of garbage filesize + timestamps for ".." links
+-Rearranged init of pad & CDVD modules to avoid problem detecting pad mode
+-NB: The above fixes an old problem with pad running amok with disc-control ON
+
+LaunchELF v4.39z beta (2009.04.09)
+-Fixed a bug from previous beta v4.39y preventing access to MC folders having a 'hidden' attribute bit set.
+
+LaunchELF v4.39y beta (2009.04.06)
+-Merged in new MCMAN and MCSERV modules by jimmikaelkael
+-Modified FileBrowser to allow renaming of all MC file/folder objects
+-Fixed "DEVICE_UNITS" again, to really allow 10 USB drives/partitions in FTP
+
+LaunchELF v4.39 (2009.02.17)
+-Updated gsKit and existing source files to SVN rev 1470.
+-Upgraded USBHDFSD to SVN rev 1534 by radad.
+-Updated ps2ftpd and existing source files to SVN rev 587.
+-Changed "DEVICE_UNITS" from 4 to 10 for the newer USB driver.
+-Altered an old workaround to allow multiple USB devices to show up properly within FTP clients.
+
+LaunchELF v4.38 (2009.01.22)
+-Fixed a bug affecting two of the timeout functions changed in v4.37
+-Modified CDVD tray checking for browsing to cdfs:
+
+LaunchELF v4.37 (2009.01.21)
+-Changed VSync-based timeouts to use Timer() instead, to eliminate PAL/NTSC variations and cure an old bug causing uncontrolled button repeats
+-Changed CDVD tray checking, to eliminate a case of FileBrowser freezing
+
+LaunchELF v4.36 (2009.01.19)
+-Fixed 'disc control' bugs in FileBrowser and JpgViewer browser
+-Improved recognition of disc types, displayed in main menu. ESR discs are shown as "ESR DVD (off)" if ESR driver needs to be activated to access disc contents, but as "ESR DVD (on)" if no driver activation is needed (if already running, or when used with a modchip)
+-Upgraded USBHDFSD of uLE to SVN rev 1516 by radad, fixing a bug in FAT16 usage
+
+LaunchELF v4.35 (2009.01.17)
+-Merged in the latest USBHDFSD version by radad (SVN rev 1513) to further improve compatibility
+
+LaunchELF v4.34 (2009.01.13)
+-Fixed some bugs that could sometimes prevent 'Left'/'Right' buttons from activating elf launches defined by user for those buttons
+-Changed to use fioGetstat instead of fioDopen+fioDclose to scan for USB drives
+-Restructured main menu event loop and centralized GUI screen redraws to it
+-Changed from dynamic to static font buffer allocation (as it's always needed)
+-Modified USBHDFSD to eliminate an irritating and unnecessary delay
+-Added rom0:ROMVER content to "MISC/Debug Info" screen (shows PS2 bios version)
+
+LaunchELF v4.33 (2009.01.12)
+-Raised a debug constant which limited v4.32 USB_mass drives to 4 instead of 10
+-Added a horizontal offset to the "About uLE" display
+
+LaunchELF v4.32 (2009.01.11)
+-Upgraded USBHDFSD to SVN rev 1503 by radad, which cures the bug causing large-file corruption in the previous uLE release, and also adds support for multiple partitions (each accessed as a separate mass?: drive) and extends the hotplugging limits (max 5 simultaneous devices with a total of max 10 partitions). Exceeding the limits will cause no harm, but the additional devices/partitions will not be accessible.
+-Upgraded USBD to SVN rev 1494 by radad, making uLE "mass:" identical to that of old applications when using multiple USB drives in uLE.
+-Improved MISC/PS2Disc subprogram to support launch of either DVD-Video disc or ESR-patched disc (but might not recognize disc type if a modchip is active)
+-Added "ESR elf" entry to "Startup Settings..." configuration menu
+NB: If no ESR elf has been configured a default of "mc:/BOOT/ESR.ELF" is used
+
+LaunchELF v4.31 (2009.01.04)
+-Added new "MISC/About uLE" subprogram, displaying a program credits screen
+-Enhanced FileBrowser to support multiple hotplugged USB mass drives
+-Upgraded usbhdfsd to SVN rev 1490 by radad, for multiple USB drive support. Note that this may require running the new "setup.sh" script, for those who wish to compile uLE themselves. (Or use the new script "upgrade_usbhdfsd.sh".)
+-Fixed various issues with TextEditor (inability to insert CRLF at CRLF etc)
+-Fixed a partition unmounting issue, that sometimes caused non-fatal failure of the TextEditor to show proper partition contents when browsing for a text file
+NB: usbhdfsd rev 1490 is now known to have a bug in writing/deleting large files.
+
+LaunchELF v4.30 (2008.09.30)
+-Fixed HDD mountpoint issues in HddManager (due to changed methods from v4.23)
+
+LaunchELF v4.29 (2008.09.25)
+-Fixed a new bug in the CNF parser, introduced when fixing the previous one. That bug cause the character after the equal sign in a variable assignment to be skipped. This should not matter for uLE or FMCB CNF files, where that character will always be a space. But it does matter when parsing SYSTEM.CNF for PS2 discs, since those files sometimes have no space in that position. This caused some discs to fail booting, both with the uLE MISC/PS2Disc command, and with the disc launcher of FMCB.
+-Minor changes to CDVD checking
+-Added DVD-Video launch capability for MISC/PS2Disc
+
+LaunchELF v4.28 (2008.09.07)
+-Fixed a bug in the CNF parser, preventing variables from being accepted when not separated by any other character from the '=' character preceding its value string. This bug affected all CNF file parsing, including that used for the PS2Disc command, as well as that used for the CNF files of uLaunchELF.
+NB: Since uLE always uses a space separator in creating CNF files, this bug has never affected CNF files created by uLE, but only CNF files edited by 'hand' and the SYSTEM.CNF files of game discs, causing some of those not to work with the PS2Disc command of uLE. So try again now, with games that failed earlier.
+
+LaunchELF v4.27 (2008.09.04)
+-Added ability of MISC/PS2Disc subprogram to also boot PS1 discs
+(Based on ideas and examples contributed by jimmikaelkael @ psx-scene)
+
+LaunchELF v4.26 (2008.09.02)
+-Fixed a bug preventing detection of PAL/NTSC mode on some slim PStwo units.
+(Now reads "rom0:ROMVER" instead of using gsKit's function "gsKit_detect_signal")
+
+LaunchELF v4.25 (2008.08.19)
+-Fixed a bug preventing proper updates of IPCONFIG.DAT (open file)
+-Fixed a bug preventing Cancel command from working in some file selections
+-Modified Skin CNF saving to allow selection of existing filenames
+-Corrected cursor positioning for LNG translated network settings
+
+LaunchELF v4.24 (2008.08.15)
+-Fixed a bug preventing unmounting of VMC devices for some cases
+
+NB: Though VMC usage should no longer be able to interfere with normal HDD access, it may still lock up in some VMC operations. This VMC driver is still to be considered a beta version, though the uLE release is otherwise stable. You should therefore not use VMC operations without backup of each VMC file used.
+
+LaunchELF v4.23 (2008.08.15)
+-Fixed a bug that made it possible to select uLE configurable files (drivers, skins, etc) on VMC
+-Fixed a bug preventing psuPaste from restoring PSU files to gamesave folders on VMC
+-Restructured the HDD mountpoint usage to eliminate conflicts between VMC and other browser needs. Conflict should now only be possible between ftp server and VMC browsing, so these activities should never be combined (user responsibility)
+-Enforced 32 character limit for vmc object names in FileBrowser (same as on MC)
+-Modified VMC mounting to last only throughout a FileBrowser session. Leaving the FileBrowser automatically unmounts any mounted VMC files
+-Fixed a VMC driver bug causing it to consider a VMC to be mounted even after a failure to do so due to unformatted content
+
+LaunchELF v4.22 (2008.08.14)
+-Fixed various bugs that could crash the RunELF function when called with improper device names or paths to non-ELF files. From now on on real launch attempts are made only after accessing the file and checking its ELF header.
+-Fixed a bug dealing with SYSTEM.CNF files for the "MISC/PS2Disc" subprogram (string termination for a file buffer from malloc was made one byte beyond the allocated area)
+-The above changes also fix the inability of the previous beta to launch ELFs from virtual memory cards.
+-Made a new revision of 'ps2client_for_uLE'. This rev8 fixes a problem with file open modes that prevented the new VMC driver from mounting VMC files over network.
+
+NB: Mounting VMC files over network is not recommended at this stage, since it is very slow. The VMC driver will need a new caching strategy to make network use practical.
+
+LaunchELF v4.21a beta (2008.07.21)
+-Embedded virtual memory card driver by Polo35 and ubergeek42, and implemented its use in FileBrowser. Note that vmc0: and vmc1: will not be shown in FileBrowser until some VMC file has been mounted, using new commands in the R1 menu of FileBrowser.
+
+LaunchELF v4.21 (2008.07.20)
+-Changed FileBrowser icon colour assignment to use Color5, Colour6, and Color7 for folders, ELF files, and generic files, respectively
+-Changed default colour values for FileBrowser icons to be yellow, green, white, used for folders, ELF files, and generic files, respectively. This change also affects HddManager pie charts as they use two of the same colour definitions
+
+LaunchELF v4.20 (2008.07.17)
+-Implemented an icon mode for the FileBrowser, where each file/folder name will now be prefixed with a small coloured icon. The icon shape for folders is different from that for files, and three different colours are used. One for folders, another for ELFs, and a third for all other files.
+-Implemented a new CNF variable 'FB_NoIcons', which may be set to disable the new FileBrowser mode. By default it is zero, enabling the new mode. There is no entry in the configuration menus for this variable, so you must add or change it by text editor (as yet).
+
+LaunchELF v4.19 (2008.07.17)
+-Fixed a bug preventing launch keys D-Pad Left and D-Pad Right from working, when redefined from defaults, and only one menu page was used (== only one CNF)
+-Fixed missing implementation of "uLE:/" search for some device related configurable files (mainly alternate USB drivers and regional keyboard maps)
+
+LaunchELF v4.18 (2008.07.09)
+-Modified loading of IPCONFIG.DAT to use "uLE:/" (so also found in uLE dir). If no initial IPCONFIG.DAT is found, any new one edited will be saved as "mc0:/SYS-CONF/IPCONFIG.DAT".
+-Fixed a number of bugs affecting display and functionality of the default commands "Configure", "Load CNF++", "Load CNF--" for various combinations of settings for skin and menu control. Note that direct button linking was not affected, so pressing the correct button always gave the correct response. But highlighting a command and pressing the 'OK' button did not always work.
+-Consolidated some PAL/NTSC GUI menu routines, and corrected a slight error in the placement of button text for D-pad 'Right' button
+
+LaunchELF v4.17 (2008.07.05)
+-Fixed a bug that made some launch links malfunction for 'childsafe' setups
+-Modified loading of ELISA100.FNT to use "uLE:/" (so also found in SYS-CONF/)
+
+LaunchELF v4.16 (2008.06.16)
+-Fixed missing driver inits for cases where uLE is launched from host: with IOP reset ON
+-Fixed a bug causing launch to crash if an elf was launched through a "uLE:/" path when stored in the same folder as the uLE elf on mass: or host:.
+
+LaunchELF v4.15 (2008.06.14)
+-Fixed a bug preventing initial CNF load from defaulting to mc?:/SYS-CONF/
+
+LaunchELF v4.14 (2008.06.13)
+-EP added 2 changed source files for PS2SDK, to eliminate a conflict between those libs and the method used by uLE for loading JPG files from HDD.
+
+LaunchELF v4.13d beta (2008.06.12)
+-removed loadConfig adaption of CNFs from obsolete uLE versions
+-Fixed some bugs in "Save As" command of TextEditor
+-Implemented "Load Skin CNF" and "Save Skin CNF" commands in "Screen Settings". The save skin command will create a CNF file similar to LAUNCHELF.CNF, but containing only 18 variables relevant to skins. The load skin command can accept either such files created by the save skin command or a complete LAUNCHELF.CNF file. In the latter case only 18 variables relevant to skins will be loaded, with the rest of the CNF file being ignored. It is also allowed to edit skin files to remove variables, which will then be unaltered when such a skin file is loaded.
+
+LaunchELF v4.13c beta (2008.06.11)
+-Fixed a bug in cursor movement for colours in "Screen Settings"
+-Implemented uLE-related file selection. Using R3 on a file in FileBrowser will return a pathname like "uLE:/filename.ext" (assuming "filename.ext" was selected). Reference to a file with the "uLE:/" prefix will cause a search for that file in some uLE-related folders. First the active CNF folder, then the SYS-CONF folders of memory cards, starting with mc0 unless the active CNF folder is on mc1. Using R3 on a folder in FileBrowser will just navigate to active CNF folder.
+
+LaunchELF v4.13b beta (2008.06.01)
+-Compiled with an older lib setup, but using exactly the same sources as v4.13. This cures a bug of v4.13 making it unable to load JPG files from HDD.
+
+LaunchELF v4.13 (2008.05.30)
+-Fixed Linux issues with the makefile do to case sensitivity.
+-Changed draw.c and updated gskit source files to fix issues with the newer gsKit.
+-Added script setup.sh to the "Changed source for external projects" directory for setting up outside projects.
+-Moved libjpg\include\libjpg.h into libjpg parent directory to match up with myPS2's SVN sources location.
+-Reverted to an older working version of ps2sdk(revision 1420).
+-Reverted back to the older SMS network modules(revision 588) resolving a severe bug, which was first introduced in the 4.12 betas.
+-Rearranged ps2ftpd sources and LaunchELF's makefile, removing the IRX module from the source package.
+-Updated libcdvd source files so it can be correctly built without the old ps2lib library.
+-Modified uLE source package further so that precompiled binaries are neither required nor included.
+-Fixed bug in reloadConfig(), skin wasn't loaded if using various CNF files and one had GUI_SKIN enabled.
+-Added option to disable text in menu screen under skin settings when GUI_SKIN is enabled.
+-Commented out fixed PS2DEV environment variable in the gsKit Makefile.pref file.
+-Added code from betas minus vmc: related things with changes noted further below.
+outside source file additions and changes:
+ gsKit\Makefile.global
+ gsKit\Makefile.pref
+ gsKit\ee\gs\src\gsPrimitive.c
+ gsKit\ee\gs\src\gsTexture.c
+ libjpg\libjpg.h
+ ps2sdk\iop\system\iomanx\src\ioman_sbv.c
+ libcdvd\makefile
+ libcdvd\ee\makefile
+ libcdvd\iop\cdvd_iop.c
+ libcdvd\iop\makefile
+ libcdvd\iop\ps2lib_ioman.h
+
+LaunchELF v4.12 Betas (2007.05.10) through (2007.06.17)
+-Added support for GUI-like skin JPG for alternative use in main launch menu. This is largely based on a design contributed by 'suloku' in the ps2-scene forums. Note that when such a skin is in use the skin JPGs will be reloaded at each entry to and exit from the main menu, so they must then be on continuously available media. Note also that the brightness setting is shared between the two skins, as are all the text colour settings, so the GUI skin needs to have average brightness and colour tone similar to the main skin.
+-Corrected interlace setting in distributed LAUNCHELF.CNF to reflect the current default, which is to have interlace active (as opposed to original default).
+-Adjusted timestamp display for compatibility to methods in Windows XP, for use with host: browsing (affects only timestamps with raw year value larger than 2256)
+-Fixed a bug in browser changes preventing user from manually canceling transfers
+-LNG authors should note that this version has additional vocabulary in lang.h, to cope with some new features. (5 new entries were added, for a total of 319). But we do not request any new LNG contributions until the next stable release, since we may make additional changes before that. So save your efforts for that stable release.
+
+LaunchELF v4.12 (2007.02.16)
+-Fixed an issue with the makefile that messed up the network functionality in LaunchELF after exiting from another PS2 application.
+-Updated to latest SMS TCPIP driver.
+-Removed the prior SMS network modules, and then changed the makefile so EEUG's network modules(SMSUTILS, SMSTCPIP, and SMSMAP) now require the compiled sources from SMS to build uLE.
+
+LaunchELF v4.11 (2007.02.02)
+-Fixed a bad bug that smashed the storage path for content of copied folders. Instead of being stored inside the proper folder the files were stored beside that folder, with the folder name attached as a prefix to the proper filename. This was due to a single faulty string reference in "filer.c", which has now been fixed.
+
+LaunchELF v4.10 (2007.02.02)
+-Modified a file of the latest iomanx source in PS2SDK, which eliminated all problems we've had with recent versions of the iomanx.irx module
+-Modified use of LNG definitions, to avoid using translated strings as gamepad button names in tooltips (mainly for the 'Select' button). Please report if I missed any !
+-Fixed a bug in copying files with names longer than 32 characters to MC, which caused creation of both a folder and a file with truncated name. The new code will truncate the names to be used on MC before being applied to any MC functions. If a filename to be truncated contains any period ('.') characters, then all truncation will be done in front of the last of these, so as to preserve the final file extension. But if the extension itself is too long (meaning it's not really an extension), then truncation will be made from the end of the full name. Note that if you attempt to copy many files with long names to MC, this truncation may make all those names identical, if they differ only in some final characters, and the end result will be that only the last file copied remains on MC. To avoid such problems, try to make sure that files for MC have valid name length. A generic object name length limit is now applied to other devices too (all file systems have some limitation), but that limit is currently set to 256 characters.
+
+
+LaunchELF v4.09 (2007.01.27)
+-Updated to use the current ps2sdk changes added by jbit.
+-Cleaned up the external source package and updated some of the ps2sdk source files.
+
+LaunchELF v4.08e Beta (2007.01.27)
+-Upgraded to a newer version of EEUG's networking module "SMSTCPIP.irx". This upgrade should eliminate some data corruption seen with the previous beta
+-Added a new LNG definition, LNG(KB_RETURN), to be used only to designate such keyboard keys (virtual or physical), as it seems that some languages need this term separate from other uses of similar words. The english version of this term in "lang.h" is just "RETURN"
+-Fixed a bug in generating SJIS-encoded title strings for "icon.sys" files created by the new browser command "New Icon". Note that this bug was not inside the source of uLE, but in the source for a string function of PS2SDK, so if you want to compile this correctly you'll need a very recent update from the SVN repository for PS2SDK
+
+LaunchELF v4.08d Beta (2007.01.07)
+-Added some newer network drivers from SMS by EEUG, raising host: speed to 1450 KByte/s
+-Removed usbhdfsd both from the modules folder and from the 'Changed source...' folder, as the standard PS2DEV version now has adopted all our modifications for it (SVN 1366)
+-Added makeicon.c to the uLE source. This is heavily based on example programs and advice contributed by 'ubergeek42' and 'ffgriever' at 'ps2-scene.org'. It allows the FileBrowser to add PS2-style icon sets to existing folders through a new command in the 'R1' menu. You can fine adjust text positioning in these icons by including some control characters into the icon text string, though at present this requires a USB keyboard. As yet these text entry dialogs use the same old routine we use for filename entry etc, but this will be improved in some later version, to gain the same abilities for gamepad as for a USB keyboard.
+The control characters for icon texts are:
+HT == Ctrl_I => Step past half a character width (to center text horizontally)
+VT == Ctrl_K => Start new row half a character height down (to center text vertically)
+CR == Ctrl_M => Start new row a full character height down (normal multi-row text)
+Rows will also be automatically 'broken' once every 8 chars, and characters that would pass beyond the bottom right corner will be ignored. If the current path already contains an icon.sys and/or icon.icn file, you will be asked if you want to overwrite or not.
+NB: Do NOT overwrite in your B?DATA-SYSTEM folder, as that will result in an invalid system save, and an exploit user will then lose the ability to boot properly !!!
+-All features added in earlier v4.08 betas are also included in this release
+
+LaunchELF v4.08c Beta (2007.01.03)
+-Modified Host interface to adapt to some changes in 'ps2client_for_uLE_rev3'.
+-One such change now allows browser display of file sizes and modification times for 'host:', except for an 'elflist' root, since that is just a pseudo-device
+-There's also an improved method for testing object types. This was made possible by the elimination of an old bug from ps2client (cured by others at ps2dev.org), so that uLE no longer has to trial-open every single object like we had to do in earlier versions
+-All beta features from the last beta version are also included, unchanged
+
+LaunchELF v4.08b Beta (2006.12.19)
+-Changed networking to use IRX modules by EEUG, for 40% speed increase of host:
+-Changed browser to use dynamic spacing to allow more characters to be displayed for long file and folder names. Filenames can now be displayed with 49 characters in 'details' mode and with 81 characters in 'filename only' mode. Filenames longer than that are shown with 80 correct characters and a final '~' character to indicate the abbreviation. Folder names are treated the same way, except with one character less, to ensure that the final '/' character will be visible, even for an abbreviated name
+-Changed browser of JpgViewer to use dynamic spacing in list mode, as described above
+-Changed browser of JpgViewer to only use L2 for switching transition effects
+-Changed browser of JpgViewer such that R2 opens the PathPad popup for path selection
+NB: Some info shown in the JpgViewer help screen is now incorrect for browser, though it remains correct while viewing a picture/slideshow, as R2 retains its old meaning in this mode. IMO this is not a bug, since that help screen can only be seen in picture viewing mode, which also has different tooltips from browsing mode
+
+LaunchELF v4.08 (2006.12.07)
+-Modified use of BrowserModePopup, to make it usable also for config browsing.
+-Fixed a bug in font loading of ELISA100.FNT
+-Fixed a bug that could crash if "Debug Info" screen was used with latest LNG files
+
+LaunchELF v4.07 (2006.11.30)
+-Modified MC attribute handling to ensure compatibility of PS1 gamesaves
+-Improved HddManager unmounting, to prevent failure of some partition commands
+-Added new "Debug Info" popup to the "MISC" pseudodrive (its use may vary in future)
+-Extended FileBrowser from 2 display modes to 3
+-Extended FileBrowser from 2 sort modes to 4
+-Added 8 new character definitions to "font_uLE.c", for use as 4 double-width characters, representing the 4 D-Pad buttons
+-Added a new popup menu to FileBrowser, to control the new display and sort modes. The new popup is opened by the button L1, as it obsoletes the old Title ON/OFF functionality
+-Added new LNG definitions to cover all new features
+-Modified initialization of uLE to improve compatibility with SwapMagic ELF launching. These changes allow uLE to find its CNF in the same folder as the ELF when launched on mass: by SwapMagic, despite the incorrect path passed in argv[0] ("mass0:\SWAPMAGIC\"). Note that this is NOT the same modification used in earlier betas, which caused other bugs. This method does not involve IOP reset, and should therefore be bug-free. That has been verified both for exploit booting and the 'back to browser' feature of SMS, which were both bugged by the old method.
+-Shortened the LNG(Modes) lang.h definition of earlier betas to LNG(Mode)
+-Extended HddManager size limit for logical partitions to 128 GB
+-Corrected a bug in HddManager sizeSelector tooltips (missed using an LNG definition)
+-Modified HddManager sizeSelector to use L2/R2 to step partition size -/+ 10 GB
+-Modified tooltips for HddManager sizeSelector to include new features
+
+LaunchELF v4.06 (2006.10.13)
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Changed partition filter and removed the codebreaker partition from the hdd partition listing.
+-Fixed a future year attribute issue with dlanor's fix.
+ps2sdk changes:
+-Changed tcpip to use the older working version of lwip(revision 1158).
+-Changed to an older working version of iomanX(revision 1332).
+outside source file additions and changes:
+ ps2ftpd\src\FileSystem.c
+ ps2sdk\iop\tcpip\tcpip\makefile
+ ps2sdk\iop\tcpip\tcpip\src\ps2ip.c
+ ps2sdk\iop\tcpip\tcpip\src\include\lwipopts.h
+ ps2sdk\iop\system\iomanx\makefile
+ ps2sdk\iop\system\iomanx\src\exports.tab
+ ps2sdk\iop\system\iomanx\src\imports.lst
+ ps2sdk\iop\system\iomanx\src\iomanX.c
+ ps2sdk\iop\system\iomanx\src\irx_imports.h
+
+LaunchELF v4.05 (2006.10.05)
+-Modified USB mass: driver to reduce delays in browsing large directories
+-Fixed USB mass: driver to permit file/folder names beginning with a period ('.')
+-Bugfixed USB mass: driver to eliminate a memory leak at disconnection/hotswap, which was responsible for occasional freezing after hotswaps
+
+LaunchELF v4.04 (2006.09.23)
+-Reverted one of my changes in usbhdfsd, because it seems to have broken dir caching. Unfortunately this means that we're back to the original super-slow dir reading, where time delay increases proportional to the square of the object count. So this version is very slow for large directories, but at least they work right...
+
+LaunchELF v4.03 (2006.09.23)
+-Fixed a bug that would freeze bootup if loading a font from HDD
+-Fixed a bug that could corrupt HDD, mainly observed when making PSU backups. This was due to some problem with changing timestamps via fileXioChStat. (HDD driver bugs ?) That timestamping code has now been removed, which is no loss, as it never worked right. Note also that timestamps are still preserved inside PSU backups, which is where it matters.
+-Replaced embedded mass: driver with a revised version of Herben's usbhdfsd (as in uLE v4.02a Beta). The revisions eliminate some serious bugs that would occur when writing directories containing many objects. I want to emphasize that the bugs now eliminated exist in *all* older mass: implementations, not just Herben's (he merely inherited them).
+
+LaunchELF v4.02 (2006.09.16)
+-Merged loadable font system contributed by Polo
+-Fixed memory leak for ELF launching (LNG buffer was not released)
+-Modified 'genFixPath' function slightly to allow more generic usage
+-Modified 'loadSkin' function to make better use of 'genFixPath' (as suggested by Polo)
+-Improved the LNG loader to ensure fallback to default language for any strings not included in the LNG file loaded (mainly for old LNG files used with new uLE versions)
+-Prepared bugfixed versions of old usb_mass drivers useful as external modules with either the old or the new uLE versions (the old drivers also work, but have more bugs, like showing wrong timestamps in uLE). These drivers are for users who find the new embedded usbhdfsd driver incompatible with their USB mass storage devices. The bugfixed versions of the old drivers are released separately, so look for them in the thread for uLE support files. Note also that 'bugfixed' does not mean that all bugs have been fixed, as that could also affect their compatibilities. Always use the newest driver that works for you, as the older ones have more bugs.
+
+LaunchELF v4.01c beta (2006.09.07)
+-Replaced old usb_mass driver with the new "usbhdfsd.irx" (now embedded)
+-Modified FileBrowser to allow display of timestamps on mass: and hdd0:
+-Modified FileBrowser to include original timestamps when pasting from most devices to MC, but in the present form, pasting a file from host: to MC will produce new timestamps.
+-Modified FileBrowser to include original timestamps when pasting to non-MC devices too, but due to lacking 'fioChstat' support in mass: and host: these are excepted from that usage, this means it's really applied only to HDD and as yet it has no effect there. The 'fileXioChStat' calls for files and folder on the pfs device seem to be ignored, at least when it comes to timestamps.
+-Patched gsKit to prevent 'lost' rectangle plots in non-interlace mode
+-Made ShowFont display font twice, with different row alignment. First even, then odd
+-Added earlier init of language arrays (setting default language)
+
+LaunchELF v4.01 (2006.09.01)
+-Fixed bug that caused the 'Back' tooltip to be duplicated in FileBrowser menu
+-Fixed bug in editor that caused it to scroll past every second 'page' without stopping
+-Made some minor source alterations suggested by EP, to reduce compiler warnings
+-Upgraded usb_mass to latest version from ps2dev.org SVN (plus our usual changes). This version fixes a bug in the last version, dealing with start/stop of USB storage devices, so anyone who had trouble with the last version should try this one. (If you installed an external driver to fix that, try configuring to use the default again instead.)
+
+LaunchELF v4.00 (2006.08.30)
+-Tweaked init order to eliminate problems with JPG skins on HDD
+
+LaunchELF v3.99 (2006.08.29)
+-Tweaked some config menus that lacked spaces between some tooltips
+-Fixed bug that prevented use of LNG files stored on HDD
+-Fixed bug that made failed load of initial CNF be shown as success
+-Fixed bug that made CNF switch messages use language valid before switch attempt
+-Tweaked init to allow LNG diagnosis dialog to work for bootup LNG failures
+-Made JpgViewer fullscreen flag persistent, changed only by user and CNF loading
+-Removed partition blocks for "__net", "__system", and "__sysconf"
+-Implemented Square as space key for FileBrowser virtual keyboard
+-Implemented some more characters for FileBrowser virtual keyboard <>{}:"/|\* But be aware that using '/' will not always work as expected, since it is the PS2 folder separator.
+-Moved some graphics characters we use out of the proper font area
+-Replaced characters 0x60 and 0x7B-0x7F with proper ascii standard characters
+-Erased all graphics characters from font range 0x80-0x9F (as preparation for new chars)
+
+LaunchELF v3.98 (2006.08.29)
+-Merged additional font characters contributed by Polo. The font now has most national characters for languages using Latin-style alphabets.
+-Modified the 'ShowFont' subprogram to display 256 font characters
+-Fixed a bug that caused LNG switch to be incomplete if the old LNG used a name shorter than 4 characters for the "MISC" pseudo-device
+
+LaunchELF v3.97 (2006.08.28)
+-Increased font resolution from 8x8 to 8x16 (replaced font5200.c with font_uLE.c)
+-Used the new font resolution to improve the symmetry of some characters. As yet this includes "ABEFHPRSUÄÅÖ"
+-Fixed the inclusion of the new FTP server improved by EP, which I botched in v3.96
+
+LaunchELF v3.96 (2006.08.27)
+-Increased font size to 256 characters, but still with '_' appearanc for many of them
+-Implemented 'extra' vowels of german and swedish for font. This covers "åäöüÅÄÖÜ". Note that this implementation is still rather ugly, due to the low resolution of our font.
+-Corrected an old bug made visible by the new characters, using top pixel row of font
+-Added error diagnostic dialog box for LNG loader, to help in debugging LNG files
+-Merged improved FTP server by EP, for better handling of mountpoints and MCs
+-Improved partition filter to reject all non-PFS partitions and CodeBreaker partitions
+-Added CNF variable for fullscreen mode of JpgViewer
+
+LaunchELF v3.95 (2006.08.26)
+-Merged multi-language support contributed by Polo (but not ready for public release)
+-Rewrote large parts of the Multi-language support for better coding efficiency etc.
+-Extended the 'setting' struct and CNF, to add 15 MISC/ device and subprogram names
+-Modified various parts of configuration management, to improve multi-language safety
+-Improved text symmetry of ynDialog boxes (most of the ones with OK/CANCEL choice)
+
+LaunchELF v3.94 (2006.08.19)
+-Fixed a bug of v3.93 that made PSU restore use incorrect gamesave folder names
+
+LaunchELF v3.93 (2006.08.19)
+-Fixed a new bug that let FTP server interfere with FileBrowser through PFS0
+-Fixed an old bug that let FTP server interfere with FileBrowser through PFS1..PFS3
+-Fixed a new bug in title handling that caused weird results with some PSU backups
+-Improved screen cleanup for some command progress reports
+-Merged PSU_NoOverwrite implementation contributed by ffgriever at ps2-scene. This eliminates redundant backup work when a timestamped PSU filename is identical to the one that would have been used for a new backup file. NB: Setting it requires text editing.
+-Changed pad initialization to cater for digital controllers, and to unlock the controller mode switch (explicitly) for digital or unrecognized (even absent) controller. This has cured some problems that occurred with faulty detection of gamepads and their types. But some cases still exist where you need to set the type manually, by pressing the analog mode button between the joysticks.
+-Added Paste+Rename command, which only affects top level selections. It is used by pressing the 'Square' button instead of the normal OK button ('Circle' or 'Cross'), with the 'Paste' command selected in the R1 menu. This works only for standard 'Paste'. Its intended use is for installing stuff to memory cards using new folder names, and to allow 'pseudo' renaming on MC and mass: by using a combination of 'Cut' and 'Paste+Rename'. But you should never do this unless you have as much free space as the data selected, and can accept the copying delay (which can be huge on these slow media).
+
+LaunchELF v3.92 (2006.08.15)
+-Fixed a new bug (v3.88) that interfered with free space calculations for HDD
+-Improved PSU title naming, so it works even if title mode was activated after 'Copy'
+-Improved confirmation dialog for folder overwrite, to include gamesave title (if any)
+-Modified folder overwrite for 'mcPaste' and 'psuPaste', to remove old folder before pasting. This is to avoid combining contents of differing gamesaves with identical names. Normal 'Paste' does not delete old folders at overwrite, so such pasting will combine files. This means that any file unique to either source or destination will exist in the destination after pasting. For normal folders that is appropriate, though it's not for gamesaves
+-Added CNF option PSU_HugeNames to make PSU names combining original folder name with the gamesave title, like in this example: "BESLES-5245800_Disgaea(1) Ep.1 LV1.psu"
+-Added CNF option PSU_DateNames to make PSU names with an appended timestamp, taken from the original gamesave data as in this example: "Disgaea(1) Ep.1 LV1_2006-07-23_14-46-33.psu". Naturally the two new options can be used in combination as well.
+NB: As yet these two new options are not in any config menu. Use TextEditor instead.
+
+LaunchELF v3.91 (2006.08.14)
+-Corrected PSU name filter which was incorrect for HDD destinations
+-Implemented title display mode for PSU files (using icon.sys stored in each file)
+-Implemented optional use of save title for PSU filename. This is based on display mode, so the name chosen will be the same as that displayed. However, since titles use Shift-JIS characters and filenames need ASCII, the title strings will be filtered to use only normal european characters. Any other character will be changed to underscore ('_').
+-Modified JpgViewer so that rotating a picture during slideshow will reset the timer so that a full normal viewing period is alloted after the rotation is performed.
+
+LaunchELF v3.90 (2006.08.13)
+-Fixed a bug that prevented proper restore of zero-length files from a PSU to MC
+-Fixed a bug that prevented proper backup of zero-length files from MC to a PSU
+-Fixed a bug that could break backup to PSU if a file size was a multiple of 1K
+
+LaunchELF v3.89 (2006.08.13)
+-Fixed a bug that prevented PSU files from being created on HDD
+-Added name filtering to ensure valid PSU filenames, both for PC and PS2 filesystems
+-Modified PSU save format slightly, to conform better with current standards of EMS. This means that for some very rare saves this version may be incompatible with v3.88, so you may need to restore saves made with v3.88 to MC using that version, and then again save them to PSU with v3.89. If you do it that way, then the new saves will be fully compatible both with new uLE versions and with EMS PSU tools.
+
+LaunchELF v3.88 (2006.08.13)
+-Implemented 'psuPaste', a new command for the R1 menu, used to Backup/Restore MC folders to/from PSU files. Each created PSU file will be given the same name as its MC folder, but with the extension ".psu" added. When restoring PSU files to MC, their names do not matter, as the proper name for the MC folder is stored inside the PSU file. The PSU files preserve all MC specific attributes, timestamps, and other bytes, including those lacking any proper documentation. The psuPaste command is only available for copying from MC to non-MC devices, or vice-versa. Restoring PSU files to MC should only be done in the root directory of that MC, and backup to PSU files should also only be made with folders in an MC root directory selected, and those folders must not have any subfolders (always illegal on MC by Sony standards). This first implementation does not enforce all those rules, so it's up to each user to be aware of them.
+
+LaunchELF v3.87 (2006.08.10)
+-Fixed a bug preventing proper display of 'Tooltips' for the PathPad dialog
+-Modified JpgViewer Prev command to go from the first file to the last file.
+-Modified drawChar and drawChar2 to use one gsKit_prim_sprite call instead of two gsKit_prim_point calls. (Polo's idea, slightly extended.)
+-Fixed a gsKit buffer overflow that could crash program on text-rich screens, by allocating 50% greater buffer. This fix should cure all crashing reported both for TextEditor and for FileBrowser.
+-Increased line thickness to 3 (for frames etc), to minimize interlace flicker.
+-Tweaked various dialogs to work better with the new line thickness
+-Modified virtual keyboard of FileBrowser to use highlight colour for cursors
+-Modified JPG Brightness scale to widen the range from 32..224 to 16..240
+
+LaunchELF v3.86 (2006.08.08)
+-Fixed a bug that caused some horizontal frame lines to be lost in non-interlaced modes
+-Fixed a bug making text 'fuzzy' when aligned to odd pixel rows in non-interlaced modes
+
+LaunchELF v3.85 (2006.08.08)
+-Merged in JpgViewer changes by Polo. It now uses DPad Up/Down for picture rotation.
+-Merged in display init changes by Polo. This should eliminate screen border garbage, and fix a problem with non-interlaced TV mode shifts between PAL and NTSC.
+-Fixed a bug that prevented v3.79-v3.84 from finding a CNF in the same folder as the ELF when started from a USB mass storage device.
+-Added function wrapper 'drawOpSprite' for calls to gsKit_prim_sprite.
+-Purged most use of gsKit_prim_line from the program, as its coordinate handling is not compatible with other gsKit_prim_ functions, and is also inconsistent within itself. (This was the main cause of incorrect dialog boxes.) I've used 'drawOpSprite' in its place.
+-Purged most direct gsKit calls for line and rectangle operations from other source files than "draw.c" which now handles most such calls for most other sections of the program. Exceptions are the JpgViewer, the circle drawing in HddManager, and the jpg loading of "main.c", which still use some such gsKit functions directly.
+-Implemented a new CNF variable "USBMASS_FILE", which may be used to specify another 'usb_mass' driver than the one embedded in the program. This choice can be set by the user in the submenu "Startup Settings..."
+
+LaunchELF v3.84 (2006.08.01)
+-Merged in gsKit non-interlace support contributed by Polo
+-Merged in Analog controls for JPG viewer contributed by Polo
+-Upgraded PS2SDK libs from ps2dev.org SVN
+-Upgraded usb_mass driver from ps2dev.org SVN. Note that this includes huge changes to the detection and initialization of USB storage devices. This means that such as did not work before may do so now, and even 'hotplugging' now seems to work well with many devices.
+-Corrected a bug introduced by gsKit changes and affecting multiple CNF loading. As a consequence of these changes it's now possible to switch between CNFs using different TV modes and interlace settings. So switching between PAL and NTSC CNFs no longer requires a restart, but will immediately switch the TV mode.
+-Implemented CNF file variables JpgView_Timer and JpgView_Trans, which will override the defaults for slideshow timer interval and picture transition choice.
+
+LaunchELF v3.83 (2006.08.01)
+-Corrected a timer variable to be 'u64' instead of 'int'
+
+LaunchELF v3.82 (2006.08.01)
+-Added anti-aliasing flag for gsKit setup (improves all picture quality)
+-Modified screen update methods to eliminate interactive flickering
+-Modified joystick reading to work with 'worn-out' gamepads
+
+LaunchELF v3.81 (2006.07.31)
+-Merged gsKit adaption contributed by Polo
+-Replaced some remnant libito defaults with ones appropriate for gsKit
+-Added screen offset conversion for compatibility to old CNF files
+-Modified some screen offset adjustments to match standard LaunchELF practice
+-Modified dialog navigation for screen settings to make it more consistent
+-Added another console check, to avoid NTSC offsets for PAL console with no CNF
+-Modified "RunElf" and "checkELFheader" functions to improve error checking for HDD. This eliminates a bug that caused program crash when attempting to use a launch key to a deleted file on HDD.
+
+LaunchELF v3.80 (2006.07.19)
+-Changed some incorrect strings in the supplied example LAUNCHELF.CNF
+-Merged JPG viewer contributed by Polo
+-Merged EE timer functions contributed by Polo
+-Modified paste progress calculations for better precision
+
+LaunchELF v3.79 (2006.07.01)
+-Changed "MISC/Configurator" to "MISC/Configure"
+-Fixed a bug that made TextEditor unable to save files on HDD
+-Added PathPad_Lock as a CNF variable. Text edit this to a non-zero value if you want to prevent any changes to your PathPad array. This will then prevent the commands to clear or set PathPad entries from having any effect. You can still use them, but not change them.
+
+LaunchELF v3.78 (2006.06.12)
+-Added ability to use 'Select', 'Left', and 'Right' as normal launch keys, by giving them optional string definitions. If those are not used, the old default usage applies, with these keys being used to enter configurator and to switch CNF pages. If the new strings are used, but set to empty strings, then these keys are disabled, and if you use the new strings for proper launch paths, then those will be used as for normal launch keys.
+-Added three new MISC/ commands:
+-"MISC/Configurator" corresponds to the default action for 'Select' button
+-"MISC/Load CNF--" corresponds to the default action for 'Left' button
+-"MISC/Load CNF++" corresponds to the default action for 'Right' button
+-Fixed several cases of incomplete PFS unmounts (caused occasional browser errors)
+-Made some changes to various text messages for better english and consistency
+-Changed TextEditor to use 'Select' button to toggle virtual keyboard OFF as well as ON
+-Fixed a TextEditor bug that caused insert mode to be missed when cursor at CR+LF line end, thus causing the CR+LF combo to be overwritten when entering a character.
+-Tweaked TextEditor colour brightness, from 255 to 160 as max component value
+-Fixed TextEditor popups to use standard GUI colours and to obey the Popup_Opaque flag
+
+LaunchELF v3.77 (2006.06.11)
+-Merged in the text editor contributed by Polo
+-Changed ELF file names from BOOTc.ELF + BOOT.ELF to BOOT.ELF + uncompressed_BOOT.ELF
+-Added support for using uLaunchELF on such CDVD filesystems that are limited to 8+3 characters for filename+extension, by also allowing a CNF file to be loaded even when renamed LNCHELF.CNF (or LNCHELF1.CNF etc for multiple CNFs). This patch only applies to loading CNFs. CNF files saved will always use the longer form of the name (LAUNCHELF.CNF etc).
+
+LaunchELF v3.76 (2006.06.09)
+-Added ability to display HDL game info and to rename such games (for the gamelist). This feature is based on a modified version of an IRX module contributed by Polo.
+
+LaunchELF v3.75 (2006.06.06)
+-Speed optimized various aspects of HddManager
+
+LaunchELF v3.74 (2006.06.05)
+-Modified HddManager to make more partitions visible
+-Added lots of changes to HddManager to improve speed and reliability (still slow init)
+-Fixed a bug that affected creation of a partition of exactly 2048MB
+-Fixed a bug that made HddManager miss subpartition sizes of 4096MB in total sum
+
+LaunchELF v3.73 (2006.06.02)
+-Added "MISC/Set CNF_Path" command that sets the CNF_Path variable by direct browsing. Note however that this does not work properly for HDD paths (yet). For those you can only use the CNF_Path variable in the "Startup Settings"
+-Added "MISC/Load CNF" command that simply reloads CNF (useful with CNF_Path variable)
+-Added CNF_Path variable (Startup Settings) to override normal CNF path choice
+-Fixed a PathPad bug causing free space of another device to be shown for host:
+-Fixed Overwrite query to show real folder names, never titles (not unique)
+-Fixed a bug in usb_mass that prevented backup of MC saves using backslash in names
+-Fixed a bug in HddManager that caused freezing with Sony-style protected partitions
+-Raised an index limit for partition arrays from 100 to 400 for larger disk support
+-Added progress messages to GetHddInfo function (mainly for debugging)
+-Changed HddManager to cause partition list refresh for the FileBrowser when needed
+-Changed HddManager to use configurable colours
+-Added four more configurable colours to Screen Settings for GUI graphs (eg: HddManager)
+-Merged HddManager contributed by Polo. It can be launched as MISC/HddManager
+
+LaunchELF v3.72 (2006.05.24)
+-Fixed a bug that sometimes caused incorrect display of free MC space
+-Fixed a bug that prevented correct display of file size sums of 4GB or more
+-Fixed a bug that prevented correct display of free size for HDD partitions > 4GB
+-Changed various configuration menus for better consistency and appearance
+
+LaunchELF v3.71 (2006.05.21)
+-Changed browser to allow MISC/ pseudodevice for manual browsing (except 'FileBrowser')
+-Changed browser to select folder created by 'New Dir' command
+-Changed browser to select object preceding object(s) removed by 'Delete' command. For multiple marks the object preceding the first deleted one will become selected, and at delete failure an attempt will be made to keep selection unchanged (may fail though).
+-Removed test message from triggerPowerOff function (was visible at PS2PowerOff)
+-Fixed a bug that made 'Disc Control' necessary for Launch Key paths using CD
+
+LaunchELF v3.70 (2006.05.18)
+-Fixed a bug from v3.69 that messed up screen when switching CNFs or canceling CONFIG
+-Changed text for ynDialog used to confirm Delete operations
+
+LaunchELF v3.69 (2006.05.18)
+-Changed MISC/PS2PowerOff function to work without either HDD or Network Adaptor
+-Changed MISC/PS2Net message to "Loading NetFS and FTP Server Modules..."
+-Changed Clipboard indicator to make it larger (now 14 pixels total width)
+-Changed 'New Dir' command to avoid 'automatic' navigation (stay in old dir)
+-Changed display of file names during Paste/mcPaste operations
+-Changed ynDialog and nonDialog to preserve operational messages on screen
+-Changed ynDialog to clean up screen background after completion
+-Changed text for ynDialog used in query to continue/abort paste operations
+
+LaunchELF v3.68 (2006.05.14)
+-Added LED-like clipboard content indicator Red=CUT, Green=COPY (overlaps scrollbar)
+-Added ability to abort Paste/mcPaste file transfers (partial dest file is removed)
+-Added loadable custom key maps for the USB keyboard driver. Note that the built-in font used at present is not capable of displaying non-english characters. Some such keys may correspond to graphics characters in this font, and will then be displayed as such, while other national keys may not have any corresponding font character. Those keys will then be displayed simply as an underscore character ('_').
+-Added MISC/ShowFont for reference purposes (Displays font on screen until next input)
+-Added 'Show Launch Titles' to main CONFIG with CNF variable Menu_Show_Titles. When set this causes Launch Key titles to be displayed instead of ELF pathnames. The variable Menu_Hide_Paths is no longer involved in that decision, though it was earlier.
+-Moved 'TIMEOUT' config to 'STARTUP SETTINGS' as it only takes effect on startup
+-Corrected a bug with tooltips for configurable files
+-Rearranged various font operations to allow for larger fonts (more characters) later
+-Corrected bug in string drawing routines (missing test for 2byte char validity)
+-Corrected bugs in char drawing routines (missing tests for font array limits)
+-Corrected a usb_mass bug (false error msg for folder creation in root directory)
+-Updated ps2sdk's libpad.c in external projects source package. This is the same bugfix that EP added to libpadx.c in v3.67
+
+LaunchELF v3.67 (2006.05.13)
+-Added PS2PowerOff function to MISC. Only works with PS2's that have a hard drive installed?
+-Updated ps2sdk's libpadx.c in external projects source package.
+-Added fixed header files to the libito external projects source package. This eliminates all the compiler warnings related to libito when building launchELF. Note: includes ito.h, itodma.h, itotypes.h, itomisc.h, itosyscalls.h, and itoimage.h.
+
+LaunchELF v3.66 (2006.05.11)
+-Added Triangle as quick exit button for all CONFIG menus, and at top level this acts the same way as the 'Cancel' command. The purpose of this is to allow you to exit and recover original settings, if you accidentally create settings that make the screen text invisible. All you need do in such a case is to press Triangle repeatedly. When you reach the main menu, all settings will have been restored.
+-Added ability to complete boot without any gamepad connected. Note that you'll need a USB keyboard to use uLaunchELF without gamepad, and that this keyboard must be enabled in the CNF (also default). If you connect a gamepad after booting, then it needs to be a Sony original, or fully compatible, otherwise it may fail to work correctly.
+-Added startup setting to enable (also default) or disable the USB keyboard driver. This setting uses the new CNF variable USBKBD_USED.
+-Added startup setting for external keyboard driver as alternative to that built in. Note however that this is not compatible to Sony drivers, but only to those from PS2SDK. This setting uses the new CNF variable USBKBD_FILE.
+-Modified browser for CNF paths, to block browsing USB to set USB drivers (can't work)
+-Modified browser for CNF paths, to block browsing MISC for anything except launch keys
+-Fixed a bug in the initialization of the keyboard, which made it work only if mass: had already been accessed in the boot process (either for booting, or for skin loading).
+-Fixed a bug causing the wrong tooltip to be shown for Init_Delay in 'STARTUP SETTINGS'
+-Fixed a bug which has prevented external USBD.IRX drivers from being used. This bug never reported any errors, but merely caused the internal driver to be used at all times. The new routine will only fall back on the internal driver if loading of the external one really fails, or if no external driver was specified.
+-Fixed a bug in skin loading that caused a file handle never to be closed if a JPG file was selected with zero size, or a size for which memory allocation fails. (Not likely to happen, but still a bad bug.)
+
+LaunchELF v3.65 (2006.05.09)
+-Implemented 'Rename' for PS1 MC files (still not possible for PS2 MC)
+-Merged support for USB keyboard in filename entry, contributed by Polo
+-Added support for USB keyboard as alternate gamepad in uLaunchELF.
+NB: See separate file "keyboard.txt" for additional details.
+
+LaunchELF v3.64 (2006.05.08)
+-Fixed some bugs in launch key title management.
+
+LaunchELF v3.63 (2006.05.07)
+-Implemented user defined launch key titles for use in the main menu, in place of the ELF names. Such titles can be edited in the main CONFIG menu, but doing so is completely optional. The file name will be used (as previously) if no title is defined for an entry. Titles will only be displayed if the option "HIDE FULL ELF PATHS" is set ON in the CONFIG menu. Otherwise the full ELF path is shown (that setting replaces the old entry "PRINT ONLY FILENAME"). Titles will be saved to the CNF file in the form "LK_xxxx_Title", where xxxx is some button designation (eg: "Circle", "Square", etc. By editing the CNF directly you can also define some titles that are not accessible in CONFIG. These are LK_Select_Title, LK_Left_Title, and LK_Right_Title, and those titles will then be used for the corresponding entries in the main menu, even though these are not really launch keys. Note that the current virtual keyboard places a 33 char limit on these titles. This limit will be extended later. All other parts of the implementation allows for 70 characters.
+-Modified timeout halting, so that timeout will continue even if a button is pressed, if that button lacks any defined purpose in uLaunchELF. This is intended to allow button commands to mod chips without affecting the timeout of uLaunchELF.
+-Added configurable init delay, so that button commands to mod chips can be used in the starting of uLaunchELF, and yet allow the user time to release those keys before uLaunchELF starts responding to any buttons. If a default program has been defined, its timeout delay will not start until the init delay has completed. You can control the new delay through the new CNF variable Init_Delay, which has a default value of zero. This new delay method also replaces the one used for emergency booting, as introduced in v3.62, but using a default delay of two seconds for that boot method (since no CNF is expected then).
+-Dropped the 'emergency' CNF inhibit feature introduced in last version, as it interferes with compatibility to other launchers. (Partly some gamepad driver issue.)
+
+LaunchELF v3.62 (2006.05.06)
+-Improved free space calculation, to make it work correctly for PS1 memory cards
+-Changed browser display to show final slash for all links to directories, which was not done previously for ".." or for gamesave titles.
+-Added support for PS1 gamesave titles, both as separately copied gamesave files, and in the standard form produced by the built-in PS2 browser (save file in folder of same name). You can easily tell the difference from the fact that folders always have a slash at the end of the string, even in title mode.
+-Reimplemented string cursor blinking for virtual keyboard
+-Added support for both keypads, in parallel. Use both or either one, with no need for the other to be connected.
+-Added emergency CNF inhibit. Pressing 'Select' button during startup will prevent the normal loading of "LAUNCHELF.CNF". This can be used either to load an "EMERGENCY.CNF" file holding user-defined defaults, or to fall back on the built-in defaults (simply by not having any "EMERGENCY.CNF" file). When the emergency button is used there will be an extra 2 second delay from program init until button commands are accepted, to allow the user time to release the 'Select' button (so it is not misinterpreted as a normal command).
+
+LaunchELF v3.61 (2006.04.18)
+-Added PathPad array for user defined browser shortcuts which can be accessed in browser by pressing R2 to bring up the PathPad submenu. Though not strictly a CNF variable, since it doesn't really configure anything, this array is saved at the end of each CNF file, so the paths can be reused in future sessions. (The main purpose of this is to minimize repetitive manual browsing) NB: There is no separate save command for this feature, so you must enter the CONFIG menu and then exit it with 'OK', to resave a CNF with PathPad.
+-Modified some menus for consistent use of Triangle button
+-Modified MISC/PS2Browser to make it go directly to that browser (as before v3.50)
+-Slightly modified CD init for MISC/PS2Disc launching (eliminated a rare error case)
+
+LaunchELF v3.60  (2006.04.11)
+-Split the background colour usage into one colour used by libito/GS for pixels outside of the normal screen area, and another used inside the normal screen area. The former will now always be max black (value 0) while the latter will remain as used previously. This change eliminates the inconsistent colouring of screen borders, making them consistently black from now on. 
+-Added configurable option for opaque popup menus to the 'SCREEN SETTINGS' submenu.
+-Fixed a bug in loadSkin function, that prevented skins from being loaded from HDD folders using long path strings (as for deeply nestled folders or very long names). That bug may have caused other errors too, depending on path strings used
+-Fixed a cosmetic bug that affected top right corner of menu frame in filebrowser, when using simple colour setup instead of JPG skin.
+
+LaunchELF v3.59  (2006.04.04)
+-Modified 'CONFIG' so that 'CANCEL' restores original skin state
+-Modified 'SCREEN SETTINGS' so that 'DEFAULT SCREEN SETTINGS' turns off skin
+-Modified main menu so that 'LOAD CONFIG++' and 'LOAD CONFIG--' will update all screen settings correctly. This was already done for skin, but not for screen offset and interlace.
+-Fixed a bug that made v3.58 use wrong default value for vertical screen offset
+
+LaunchELF v3.58  (2006.04.04)
+-dlanor: Fixed a bug that could corrupt a Launch Key setting, if you started to browse for a new ELF of a launch key whose old ELF was on MC, and then cancelled out of the browser
+-dlanor: Tweaked some display parameters to improve visibility of characters at the 'edges' of the screen. Mainly needed for top and bottom lines (esp corner characters)
+-dlanor: Readjusted some display parameters so that file browser now uses 26 rows for PAL, and 22 rows for NTSC.
+-dlanor: Modified the methods of handling display parameters, to make it easier to modify screen layouts
+-dlanor: Corrected various implementation bugs of the new resolution for NTSC
+-dlanor: Added support for either PAL or NTSC TV modes on either PAL or NTSC consoles. The TV mode is configurable in 'STARTUP SETTINGS', and requires reset of the console to activate a changed mode
+-dlanor: Renamed the "SKIN SETTING" submenu to "SKIN SETTINGS" as it has two settings now
+-Polo35: Reimplemented much of the graphics routines, to provide new higher resolutions of 640x512 for PAL consoles and 640x448 for NTSC consoles
+-Polo35: Added brightness control for skins. This allows skin pictures to be used that would not work otherwise because they contain both bright and dark areas, so that text would become invisible on parts of the background. By adjusting skin brightness you can ensure text readability with any picture. Brightness is configurable in 'SKIN SETTINGS' submenu
+
+LaunchELF v3.57  (2006.04.02)
+-Fixed a bug that interfered with timeout for default ELF launching
+
+LaunchELF v3.56  (2006.04.02)
+-Added CONFIG option 'Menu Frame:'. Default is ON, stored in CNF as "Menu_Frame = 1"
+-Modified all menus/submenus to minimize redundant display calls (offload GS). The purpose of this change is mainly to reduce the risk of screen flicker, but another side effect is that the program may be more responsive, as it no longer wastes time on unneded work
+-Fixed a skin problem by adding 'itoGsFinish()' calls after skin texture load calls
+
+LaunchELF v3.55  (2006.03.30)
+-dlanor: Rearranged colour configuration in 'SCREEN SETTINGS' to make more room
+-dlanor: Moved menu title configuration to 'SCREEN SETTINGS'
+-dlanor: Added colour patches and descriptive labels to colour configuration
+-dlanor: Changed colour configuration format to hex, so as to match CNF file
+-Polo35: Moved skin configuration to 'SCREEN SETTINGS'
+-Polo35: Added JPG skin preview
+
+LaunchELF v3.54  (2006.03.29)
+-Removed limitation that prevented use of JPG skins stored on HDD
+-Improved readability of source code by adding a new drawSprite function
+
+LaunchELF v3.53  (2006.03.28)
+-dlanor: Added user editable menu title (individual per menu page)
+-Polo35: Sealed some memory leaks in the JPG background skin implementation.
+-Polo35: Improved vertical resolution of JPG skin by 87.5% (240/128)
+
+LaunchELF v3.52  (2006.03.26)
+-Merged in JPG background implementation, contributed by 'Polo35' at PS2-Scene.
+-Combined hdd patches to a single IRX for both PS2 and PStwo, eliminating the need for model-dependent ELFs. Now all models of PS2 and PStwo can use the same ELFs.
+-Modified the partition 'hiding' of both the main program and the FTP server, so as to allow normal file/folder access to the partition "__common", used by the Sony HDD browser for memory card backups.
+-Modified the timeout method so that pressing any gamepad keys will permanently halt the timeout. The timeout will also be halted once the DEFAULT action has been performed. This is useful for those who set up "MISC/PS2Net" as DEFAULT action, to start FTP server.
+-Modified menu handling, to prevent all file/folder write access to the pseudo-folder of "host:/" which is equivalent to the "elflist.txt" file on the host system (normally your PC). Such access is meaningless, but the commands were not blocked previously.
+
+LaunchELF v3.51  (2006.03.03)
+-Added experimental support for HDD on 'slim PStwo' models, released as separate ELFs in the same release ZIP. Developers should be aware that this patch adds a new module to PS2SDK, named "ps2hdd_slim_PStwo.irx" and serving the same purpose for those models that "ps2hdd.irx" does for traditional PS2 models. Thanks go to 'lonwern' at PS2-Scene for pointing out the precise function in the source code that needed patching.
+
+LaunchELF v3.50  (2006.03.01)
+-Modified the ELF loader so it can reside at the same address used in LaunchELF versions earlier than v3.46, and still retain compatibility with current version of PS2Link. This eliminates the incompatibility that v3.46-v3.49 had with some unpacker stubs, and thus with all programs using those stubs, (notably myPS2). Full compatibility is now restored for those programs.
+
+LaunchELF v3.49  (2006.02.26)
+-EP Fixed an issue where garbage could be displayed at startup when LaunchELF was booted by another program's generic launcher function. (Note: Issue only appeared to occur randomly with the packed ELF when using only one CNF).
+
+LaunchELF v3.48  (2006.02.25)
+-EP corrected a bug in the reading of free size on MC. This bug could cause menu commands to fail with extremely slow MC. (Noted with 64MB MCs from Datel.) Thanks go to 'cmal1492' for bringing this bug to our attention. (It is older than the uLaunchELF project.)
+
+LaunchELF v3.47  (2006.02.22)
+-Corrected a serious bug in the IOP Reset routine (reverse logic for SifIopSync).
+
+LaunchELF v3.46  (2006.02.20)
+-Modified the ELF loader of LaunchELF to improve compatibility with PS2Link. This resulted in slightly smaller code, and as a side effect the loader will no longer display the name of the ELF to be loaded on screen. The major benefit is that LaunchELF will work well with the new version of PS2Link, also released this night. Thanks go to Drakonite for his advice on how to improve this compatibility.
+
+LaunchELF v3.45  (2006.02.19)
+-Fixed a LaunchELF bug that prevented folder overwrites when pasting to HOST.
+-Fixed a PS2Client bug that prevented detection of folder conflicts on HOST.
+-Added a progress report (written file bytes counter) to 'Paste' and 'mcPaste'.
+-EP fixed a few issues that prevented PS1 memory cards from appearing in FTP listing. (Note: Files on PS1 memory cards lack timestamps so the timestamps come from the current PS2 system time).
+
+LaunchELF v3.44  (2006.02.18)
+-Implemented HOST interface write access to networked PC. This uses a new CNF variable named "NET_HOSTwrite" which has a default value of "0" meaning it is disabled. For reasons of safety there is no way to change this value from the config menu. Edit it yourself, and set its value to "1" (or any other non-zero value) to enable the new abilities, which include the following menu functions 'Cut', 'Paste', 'mcPaste', 'Delete', 'Rename', 'New Dir'. Note that most of the new functions require a very recent version of ps2client or RadHostClient to function, and at present the 'Rename' function only works with the ps2client version specially patched for LaunchELF. (Available in the LaunchELF forum.) (NB: file writing seems bugged in RadHostClient v1.5)
+-Added modified sources for ps2client to the folder "Changed source for external projects".
+
+LaunchELF v3.43  (2006.02.16)
+-This release is purely a bugfix for an old bug in the HOST interface. That bug was mostly harmless in older versions, but became capable of freezing the console in v3.41u and v3.42.
+
+LaunchELF v3.42  (2006.02.15) NB: switched date format to YYYY.MM.DD
+-Implemented mcPaste command in submenu. Like the old Paste command this copies all selected files and folders (recursively), but it is specially intended for MC backups. It can only be used either to copy from MC to non-MC (making backups from MC) or to copy from non-MC to MC (restoring backups to MC). These backups on non-MC media will have an extra file in each folder, holding the original MC attributes and timestamps of all files in that folder. This data will be used when restoring the backups to MC, so that games will accept the restored files as being the originals. The 'extra' files are filtered out from such copying so they don't appear among the restored files on MC. Those 'extra' files all use the same filename, which is "PS2_MC_Backup_Attributes.BUP.bin" (to avoid any confusion with 'real' files).
+
+LaunchELF v3.41u (02/13/2006)
+-Implemented new standards for handling of file and folder attributes on PS2 memory cards. This ensures that all gamesaves copied from one such MC to another such MC will have all attributes and timestamps preserved, so the copies remain acceptable to the games. It also improves the chances of successful backup/restore of gamesaves to/from non-MC devices, by using standard attributes for files and folders that match what the majority of games use.
+-Implemented a patch to the 'Get Size' command, so that it will display real attributes and modification timestamp of a file/folder on MC. For non MC this will show a standard attribute and zeroed timestamp, so that's not very useful. This patch is just a temporary thing, until we make something better.
+-Implemented selection of external USBD.IRX files, for those that have trouble using the one embedded into LaunchELF. (This change was contributed by 'sincro'.)
+
+LaunchELF v3.41t (02/03/2006)
+-Implemented a new CNF format and various new defaults for the settings. Essentially this means that all settings are specified as named variables, and line order is no longer significant. This will allow easy human editing as well as many new features in the future. For details on new defaults, study the enclosed LAUNCHELF.CNF
+
+LaunchELF v3.41s (01/13/2006)
+-Modified a comment in fat_write.c to fix an IOP 3.2.2 compiler issue for the usb mass driver.
+-Added a new line to the end of imports.lst to eliminate an IOP 3.2.2 compiler warning for host.
+-Rebuilt everything with the IOP 3.2.2 compiler. (Note: includes cdvd, ps2ftpd, and usb_mass modules).
+-Modified the makefile to use the ps2dev9.irx module from the PS2SDK instead of the older one from the original LaunchELF source package. (Note: Are there still reliability problems?)
+-Updated "Development related issues.txt" removing both the ps2dev9.irx reliability issue that now appears fine and the ps2ftpd.irx issue that is now fixed.
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Fixed a bug with the IOP 3.2.2 compiler by moving "int iOpened = 0" variable declaration in function FileSystem_OpenFile to the top with the other variable declarations. (Note: this fixes the crashing issue that occurred when transferring a new file to the memory card).
+-Rewrote some of the auto-mount partitions code to also work with the IOP 3.2.2 compiler.
+-Updated issues.txt removing the issue with the IOP 3.2.2 compiler.
+-Altered files: draw.c=version_id, fat_write.c=comment fix, imports.lst=IOP warning fix, makefile=use sdk's ps2dev9 module, FileSystem.c=ps2ftpd changes
+
+LaunchELF v3.41r (12/25/2005)
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Fixed an issue with auto-mounting hdd partitions for those using Internet Explorer as their ftp client.
+-Altered files: draw.c=version_id, FileSystem.c=ps2ftpd changes
+
+LaunchELF v3.41q (12/24/2005)
+-Updated host and all its source files with EEUG's changes to fix a possible issue with host.
+-Made a couple of changes to radad's latest changes to hdd_fio.c in the ps2sdk. (Note: Included hdd_fio.c, which compiles with the older iop-2.8.1 and gives accurate sizes for hdd partitions).
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Changed hdd partitions to show up as directories instead of files.
+-Added the ability to auto-mount hdd partitions to pfs/0. (Notes: Once a partition's directory is opened, the partition is auto-mounted to pfs/0. The directory is then also changed to pfs/0. Partitions are un-mounted at hdd/0 and also just prior to being auto-mounted).
+-Cleaned up the source code a bit to fix an unused variable compiler warning.
+-Finished the UNIX-style LIST format after many other changes were made. (Note: Now the LIST format does either "MMM DD  YYYY" or "MMM DD hh:mm" based on the days between calculation).
+-Made some slight changes to read the ps2's system clock.
+-Added the ability to read the ps2's system clock so now root and device dirs use this instead of "1/1/1970".
+-Added a days between dates calculator in order to complete the UNIX-style LIST format. (Note: Now if the modified date of a file/dir is within the last 182 days the "hh:mm" format will appear in place of the "YYYY" format as it's suppose to).
+-Commented out all the extra debug printf's as they are currently no longer needed.
+-Added a new uitoa function that can deal with larger sizes.
+-Fixed an issue with size so now hdd partitions and files can accurately display size in bytes.
+-Added issues.txt that lists the only issues left to be resolved with ps2ftpd.
+-Altered files: draw.c=version_id, hostlink.h + imports.lst + irx_imports.h + Makefile + net_fio.c + net_fio.h + net_fsys.c + ps2host.c + Rules.make=updated host source files also now diff compatible, FileSystem.c + FileSystem.h + FtpClient.c + imports.lst + irx_imports.h=ps2ftpd changes
+
+LaunchELF v3.41p (11/19/2005)
+-Updated "Development related issues.txt" removing the iomanX.irx issue as it has now been fixed at the sdk level.
+-Updated the source package removing iomanX things as radad's changes made it into the ps2sdk.
+-Updated the makefile to use the iomanX.irx from the sdk.
+-Updated the rest of dlanor's ps2sdk source files so they're more diff compatible.
+-Updated the source package that fixes an inconsistency with created files/dirs hour timestamp for hdd and usb mass devices.
+-Changed usb_mass driver slightly to allow the reading of Date/Time Created, Date Accessed, and Date/Time Modified.
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Reverted back to the UNIX-style LIST format as it appears to be the most compatible overall.
+-Placed printf's in the driver to show timestamps and other attributes for possible future debugging purposes that will hopefully only be temporary.
+-Altered files: draw.c=version_id, fat.h + fat_driver.c=support for reading more of usb mass timestamp attributes, fat_write.c + misc.c + misc.c=fixes for hour timestamp issue, makefile + libmc.h + libpad.c + libpad.h + libpad.h + libpadx.c=updates, FileSystem.c + FtpClient.c + FtpCommands.c=ps2ftpd changes
+
+LaunchELF v3.41O (11/13/2005)
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Fixed a bug with MS-style list format and many ftp clients.
+-Changed MS-style list format slightly to show 12:00AM instead of 00:00AM, which was wrong earlier. (Note: some ftp clients will get this wrong and show 12:00PM instead so be aware).
+-Altered files: draw.c=version_id, FtpClient.c + FtpCommands.c=ps2ftpd changes
+
+LaunchELF v3.41o (11/12/2005)
+-Updated iomanX.irx module and source file with radad's changes.
+-Updated "Development related issues.txt" updating an issue that radad found a fix for.
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Changed to MS-style LIST format for testing. More compatible?
+-Made slight changes to the previously used UNIX-style LIST format.
+-Added the possibility to change within the included sources the option for going back to the UNIX-style LIST format.
+-Altered files: iomanX.c=radad's changes, draw.c=version_id, FtpClient.c=ps2ftpd changes
+
+LaunchELF v3.41n (10/30/2005)
+-Changed order of loading device drivers when starting ps2net. 
+-Updated Slam-Tilts "NETWORK SETTINGS" with dlanor's added change to hopefully fix an issue some were experiencing.
+-Updated ps2sdk's libmc.c, with dlanor's prior changes, to the source package.
+-Updated "Development related issues.txt" removing an issue that has now been resolved.
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Fixed attributes of newly created files/dirs on hdd that matches LaunchELF's implementation.
+-Made a workaround for "ps2fs: Warning: NULL buffer returned" issue that occurred when writing files to the hdd.
+-Changed list string format slightly to match a known ftp list format as it was only off by two.
+-Made the necessary changes for rename to be implemented.
+-Added the ability to rename files/folders for mounted hdd partitons.
+-Altered files: main.c=minor changes, config.c=ipStringToOctet changes, draw.c=version_id, libmc.c=updated, FileSystem.c + FileSystem.h + FtpClient.c + FtpClient.h + FtpCommands.c=ps2ftpd changes
+
+LaunchELF v3.41m (10/16/2005)
+usb_mass new additions and changes:
+-Updated usb_mass driver to version 0.32 along with radad's change to fat_driver.c.
+-Added the ability of reading of day, month, and year from variable "mtime".
+-Added the ability of reading of hours, minutes, and seconds from variable "mtime".
+-Fixed a bug that caused a corrupt month timestamp with newly created files in fat_write.c
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Added "hdd" as a supported filesystem device so it shows up with "mc", "pfs", and "mass" in the root device listing.
+-Changed a few things to support HDD partition viewing by fixing a sub directory issue.
+-Made changes to only show the same partitions that unofficial LaunchELF shows.
+-Fixed issue where mc save folders, that are copy protected, showed up as files instead of folders.
+-Fixed protection attributes not showing up properly with mass.
+-Removed workaround for "mass" and timestamp issues since it's no longer needed do to changes to usb_mass driver.
+-Altered files: fat_driver.c=usb_mass changes, fat_write.c=usb_mass month fix, FileSystem.c=ps2ftpd changes, draw.c=version_id
+
+LaunchELF v3.41l (09/18/2005)
+-Added a modified makefile for loader to the source package that was forgotten early on.
+-Added "Development related issues.txt" file to the source package.
+-Added Slam-Tilts "NETWORK SETTINGS" option that allows the user to edit the IPCONFIG.DAT file at mc0:/SYS-CONF.
+-Renamed a few things such as menus and menu messages.
+ps2ftpd new additions and changes: Included ps2ftpd.irx and source changes.
+-Added a fix for multiple mc directories bug, which occurs when both slots contain PS2 memory cards.
+-Added "mass" as a supported filesystem device so it shows up with "mc" and "pfs" in the root device listing.
+-Changed a few things in order to accommodate support for USB mass fixing a sub directory issue.
+-Created a workaround to fix a "mass" listing issue do to timestamps not being able to be accessed. (Note: Hopefully this is only temporary but as of now all files/folders timestamps for "mass" show up as "1/1/1970").
+-Altered files: config.c/launchelf.h=Network Settings option, main.c=load usb device driver when launching ps2net, draw.c=version_id
+
+LaunchELF v3.41k (08/16/2005)
+-Fixed bug that prevented zero-sized files from being pasted
+-Altered files: filer.c=Bugfix, draw.c=version_id
+-Matrix Infinity Dev.2 boot will require the non-packed ELF
+
+LaunchELF v3.41j (07/20/2005)
+-Fixed LIBCDVD 1.15 issue with DVD-ROMs: Thanks to Neme for the explanation and solution.
+
+LaunchELF v3.41i (07/03/2005)
+-Fixed issue with ps2ftpd root directory listing bug with other ftp clients.
+-Included ps2ftpd.irx compile with source changes.
+
+LaunchELF v3.41h (06/21/2005)
+-Replaced usb_mass driver with latest version, for support of more devices
+
+LaunchELF v3.41g (06/20/2005)
+-Added config name to another failure message (missed it for 'save config' earlier).
+-Corrected a malloc size error (Reported by 'slartibartfast' at ps2-scene)
+-Recompiled all components (including ps2sdk) using v2.8.1 of the IOP compiler
+
+LaunchELF v3.41f (06/18/2005)
+-Added config name to both failure messages (Name of config that failed to load/save).
+-Replaced ps2ftpd module to eliminate a problem with memory card transfers.
+NB: Matrix Infinity Dev.2 boot again works with either of the ELFs.
+
+LaunchELF v3.41e (06/17/2005)
+-Changed ps2dev9.irx module from present PS2SDK to an older version, to achieve much
+ improved reliability for the host: interface. All other functionality is unchanged.
+NB: Matrix Infinity Dev.2 boot again requires the non-packed ELF for this version.
+
+LaunchELF v3.41d (06/17/2005)
+-Fixed bug from v3.41c, causing IOP reset to fail in some cicumstances
+ This was fixed by not using initsbv_patches before IOP reset.
+ For future updates, we need to be aware of possible conflicts with this.
+-Fixed bug from v3.41c, causing Net Config values to not be displayed.
+NB: Matrix Infinity Dev.2 boot works for either ELF, with or without IOP reset
+NB: Matrix Infinity Dev.1 boot works for either ELF, with or without IOP reset
+NB: Exploit boot works with either ELF, with or without IOP reset
+
+LaunchELF v3.41c (06/15/2005)
+-Added key config MISC/PS2NET which starts FTP server and PS2NetFS
+-Added 'host:' device with ability to browse PC filesystems (ps2client at PC end).
+-Added alternate sort order when showing titles: L1=sort_by_title, L2=sort_by_folder
+-Added IOP module checker to avoid many module conflicts
+-Added experimental PS2SDK functions to allow IOP reset with MCMAN functionality
+-Added alternate iomanX module to improve HDD access reliability
+-Tweaked and twisted various stuff to improve operation in general
+NB: Matrix Infinity Dev2 booting requires the non-packed ELF, and IOP reset OFF in CNF
+NB: Those things do not matter for Dev1 booting with the same chip though.
+NB: Exploit booting works with either ELF, but seems to dislike IOP reset
+
+LaunchELF v3.41b (06/07/2005)
+-Changed to a cycle like function for config loading.
+-Renamed newer launch screen menu items to reflect changes to config loading.
+-Added new menu, "STARTUP SETTINGS", and moved "RESET IOP" to it.
+-Added "NUMBER OF CNF's" to "STARTUP SETTINGS". (NOTE: Sets the max number of config files).
+-Added kthu's "KEY MAPPING" to "STARTUP SETTINGS". (NOTE: Sets the X:OK and O:CANCEL).
+-Added dlanor's many fixes including memory leak fix for loadConfig, reset IOP bug, memory card access issue, and config loading problems with compressed ELF's.
+
+Note: Defaults are "RESET IOP: OFF", "NUMBER OF CNF'S: 1", and "KEY MAPPING: O:OK X:CANCEL".
+
+LaunchELF v3.41a (05/30/2005)
+-Added reset IOP on start as a toggle (Note: off by default).
+-Added dlanor's fix for the elf launching bug.
+-Changed text info from "AWAY" to "SUBTRACT" in the menus because it's more proper to say add or subtract than add or away.
+-Changed text for setting "INIT" to "INITIAL SCREEN SETTINGS".
+-Added support for two total configs press d-pad left or right to switch between configs. (Note: the two configs are LAUNCHELF.CNF and LAUNCHELF1.CNF).
+-Added two menus below the Select config item - left and right to load configs via menu.
+
+Two binaries are included: BOOT.ELF - the normal binary and BOOTc.ELF - a compressed binary. The compressed binary, BOOT.ELF, was packed using pixel's ps2-packer 1.0.
+
+The source changes to all the files that have been modified are also included. This makes it possible for the author of LaunchELF to add any or all of the current changes to the official LaunchELF project. It also helps those who may want to contribute to the uLaunchELF project. All the files that have been modified from the LaunchELF v3.41 source package are in the src folder.
+
+Code from others was used so if anyone should get credit they should. Ideas from other people were also used, which has been helpful.
+
+Special Thanks to the following:
+Mr. Mirakichi the original creator of the LaunchELF project, with special gratitude for the fact that he released its source code in retiring from the project.
+
+'E P' Who revived the project after Mr. Mirakichi retired from it, and thus kept it alive, adding new features and maintaining the project in general, at first alone but later joined by:
+
+dlanor who has also made various additions, fixes, and other work on the project.
+
+Polo35 for his work on JPG skinning/viewer, HddManager, TextEditor, etc
+radad for enhancing the usbhdfsd driver and some other assistance
+Drakonite for his help and advice on how to improve the ELF loader
+sincro for his USBD.IRX selector code
+kthu for the key swapping source changes, which allow the user to swap x and circle buttons.
+Slam-Tilt for the NETWORK SETTINGS option source changes.
+sincro for the source changes that allow for the selection of external USBD.IRX files.
+chip for ps2ftpd, of which a few modifications were made to.
+pixel for ps2-packer that made the small BOOTc.ELF binary.
+Hermes for the early reset IOP source (BOOT.c cogswaploader).
+mrbrown for the independence exploit.
+The ps2dev community for the tools and assistance.
+all those who like LaunchELF.

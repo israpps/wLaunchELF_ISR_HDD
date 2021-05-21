@@ -1,0 +1,11 @@
+*.a
+*.elf
+*.ELF
+*.erl
+*.exe
+*.o
+*.swp
+*.tmp
+*.irx
+*.s
+githash.h

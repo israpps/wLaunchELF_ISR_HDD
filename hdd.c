@@ -853,7 +853,7 @@ void hddManager(void)
 							nparties = 0;  //Tell FileBrowser to refresh party list
 						}
 					}
-				else if (ret == HEADER) {
+				} else if (ret == HEADER) {
 					char* msg;
 					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/%s/",PartyInfo[browser_sel].Name);
 					if (ynDialog(msg) == 1) {

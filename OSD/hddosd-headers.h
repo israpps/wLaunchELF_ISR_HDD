@@ -31,6 +31,6 @@ typedef struct
 } header_info_t;
 
 //User function
-extern int WriteAPAHeader(header_info_t info);
+int WriteAPAHeader(header_info_t info);
 
 #endif

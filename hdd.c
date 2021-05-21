@@ -854,7 +854,7 @@ void hddManager(void)
 						}
 					}
 				} else if (ret == HEADER) {
-					char* msg;
+					char* msg = "";
 					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/%s/",PartyInfo[browser_sel].Name);
 					if (ynDialog(msg) == 1) {
 						header_info_t info;

@@ -43,6 +43,9 @@
 #include <usbhdfsd-common.h>
 #include "hdl_rpc.h"
 
+#include "OSD/hddosd-headers.h"
+
+
 #include <sio.h>
 #include <sior_rpc.h>
 

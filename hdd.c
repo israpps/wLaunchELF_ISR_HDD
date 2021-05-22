@@ -855,12 +855,12 @@ void hddManager(void)
 					}
 				} else if (ret == HEADER) {
 					char* msg = "";
-					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/%s/",PartyInfo[browser_sel].Name);
+					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);
 					if (ynDialog(msg) == 1) {
 						header_info_t info;
-							sprintf(info.systemCnf, " mass:/%s/system.cnf", PartyInfo[browser_sel].Name);
-							sprintf(info.iconSys, "mass:/%s/icon.sys", PartyInfo[browser_sel].Name);
-							sprintf(info.listIco, "mass:/%s/list.ico", PartyInfo[browser_sel].Name);
+							sprintf(info.systemCnf, " mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
+							sprintf(info.iconSys, "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
+							sprintf(info.listIco, "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);
 							sprintf(info.partition, "hdd0:%s", PartyInfo[browser_sel].Name); 
 						if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}
 					}

@@ -60,6 +60,7 @@ jobs:
   trigger-auto-update:
     runs-on: ubuntu-latest
     needs: build
+    steps:
     - name: trigger israpps auto-update system
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
       uses: peter-evans/repository-dispatch@v1

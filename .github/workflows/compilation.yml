@@ -56,3 +56,12 @@ jobs:
         files: |
           *.ELF
           ULE-HEADER_SAMPLES*
+          
+    - name: trigger israpps auto-update system
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+      uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.IUS }}
+          repository: israpps/FreeMcBoot-Installer
+          event-type: Component_update
+          client-payload: '{"sha": "${{ github.sha }}"}'

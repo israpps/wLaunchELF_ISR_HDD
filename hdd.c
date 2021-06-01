@@ -858,10 +858,10 @@ void hddManager(void)
 					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);
 					if (ynDialog(msg) == 1) {
 						header_info_t info;
-						char[100] system_cnf_buffer;
-						char[100] icon_sys_buffer;
-						char[100] icon_icn_buffer;
-						char[40]  part_name_buffer;
+						char system_cnf_buffer[100];
+						char icon_sys_buffer[100];
+						char icon_icn_buffer[100];
+						char part_name_buffer[40];
 							sprintf(system_cnf_buffer, "mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
 							sprintf(icon_sys_buffer,   "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
 							sprintf(icon_icn_buffer,   "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);

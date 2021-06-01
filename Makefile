@@ -26,6 +26,15 @@ ifeq ($(SMB),1)
 	EE_CFLAGS += -DSMB
 endif
 
+ifeq ($(TMANIP),1)
+ EE_CFLAGS += -DTMANIP
+endif
+
+ifeq ($(TMANIP),2)
+ EE_CFLAGS += -DTMANIP
+ EE_CFLAGS += -DTMANIP_MORON
+endif
+
 BIN2S = $(PS2SDK)/bin/bin2s
 
 .PHONY: all run reset clean rebuild format format-check

@@ -37,7 +37,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wLaunchELF-${{ steps.slug.outputs.sha8 }}
-        path: BOOT.ELF
+        path: *.ELF
 
     - name: Create release
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
@@ -46,4 +46,4 @@ jobs:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "latest"
         title: "Latest development build"
-        files: BOOT.ELF
+        files: *.ELF

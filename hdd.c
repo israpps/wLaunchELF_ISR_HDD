@@ -369,6 +369,7 @@ int MenuParty(PARTYINFO Info)
 
 	if ((Info.Name[0] == '_') && (Info.Name[1] == '_')) {
 		enable[REMOVE] = FALSE;
+                enable[HEADER] = FALSE;
 	}
 	if (Info.Treatment == TREAT_SYSTEM) {
 		enable[REMOVE] = FALSE;
@@ -378,11 +379,11 @@ int MenuParty(PARTYINFO Info)
 	}
 	if (Info.Treatment == TREAT_HDL_RAW) {
 		enable[EXPAND] = FALSE;
-		enable[HEADER] = FALSE;
+		//enable[HEADER] = FALSE;
 	}
 	if (Info.Treatment == TREAT_HDL_GAME) {
 		enable[EXPAND] = FALSE;
-		enable[HEADER] = FALSE;
+		//enable[HEADER] = FALSE;
 	}
 	if (Info.Treatment == TREAT_NOACCESS) {
 		enable[EXPAND] = FALSE;

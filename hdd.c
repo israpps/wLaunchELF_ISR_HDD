@@ -862,15 +862,18 @@ void hddManager(void)
 						char system_cnf_buffer[100];
 						char icon_sys_buffer[100];
 						char icon_icn_buffer[100];
+						char boot_kelf_buffer[100];						
 						char part_name_buffer[40];
 							sprintf(system_cnf_buffer, "mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
 							sprintf(icon_sys_buffer,   "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
 							sprintf(icon_icn_buffer,   "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);
+							sprintf(boot_kelf_buffer,   "mass:/__Headers/%s/boot.kelf", PartyInfo[browser_sel].Name);							
 							sprintf(part_name_buffer,  "hdd0:%s", PartyInfo[browser_sel].Name); 
 							
 							info.systemCnf = system_cnf_buffer;
 							info.iconSys   = icon_sys_buffer;
 							info.listIco   = icon_icn_buffer;
+							info.bootKelf  = boot_kelf_buffer;
 							info.partition = part_name_buffer;
 						
 						if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}

@@ -1,5 +1,5 @@
 [![CI](https://github.com/ps2homebrew/wLaunchELF/workflows/CI/badge.svg)](https://github.com/ps2homebrew/wLaunchELF/actions?query=workflow%3ACI)
-
+![GitHub all releases](https://img.shields.io/github/downloads/israpps/wLaunchELF_ISR_HDD/total?logo=github)
 
 # WARNING
 ##### __THIS MOD IS INTENDED ONLY FOR APA HEADER INJECTIONS (HDD MANAGER), SINCE IT'S BASED ON LATEST wLaunchELF (UNSTABLE)__

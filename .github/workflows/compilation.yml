@@ -52,7 +52,7 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "latest"
-        title: "Latest development build"
+        title: "Latest automated build"
         files: |
           *.ELF
           ULE-HEADER_SAMPLES*

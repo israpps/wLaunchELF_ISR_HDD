@@ -23,10 +23,10 @@
 int partitionSector = -1;
 
 //Buffer for I/O devctl operations on HDD
-uint8_t IOBuffer[512 + sizeof(hddAtaTransfer_t)] __attribute__((aligned(64)));
+unsigned char IOBuffer[512 + sizeof(hddAtaTransfer_t)] __attribute__((aligned(64)));
 
 //Buffer for HDD dump
-uint8_t dumpBuffer[HDD_BLOCK_SIZE] __attribute__((aligned(64)));
+unsigned char dumpBuffer[HDD_BLOCK_SIZE] __attribute__((aligned(64)));
 
 //Magic string for PS2ICON3D
 static const char *HDL_HDR0 = "PS2ICON3D";
@@ -90,7 +90,7 @@ int WriteFileToAPAHeader(char *fileName, category_t category)
 	int result;
 	unsigned int size;
 	iox_stat_t statFile;
-	uint32_t dataOffset, sizeOffset, offsetOffset, offset;
+	unsigned int dataOffset, sizeOffset, offsetOffset, offset;
 
 	FILE *file;
 
@@ -136,16 +136,16 @@ int WriteFileToAPAHeader(char *fileName, category_t category)
 			if (fread(dumpBuffer + dataOffset, 1, size, file) == size)
 			{
 				//Stores size and offset
-				memcpy(dumpBuffer + sizeOffset, &size, sizeof(uint32_t));
-				memcpy(dumpBuffer + offsetOffset, &offset, sizeof(uint32_t));
+				memcpy(dumpBuffer + sizeOffset, &size, sizeof(unsigned int));
+				memcpy(dumpBuffer + offsetOffset, &offset, sizeof(unsigned int));
 
 				//Same data for del.ico
 				if (category == LIST_ICO)
 				{
 					sizeOffset = 0x102C;
 					offsetOffset = 0x1028;
-					memcpy(dumpBuffer + sizeOffset, &size, sizeof(uint32_t));
-					memcpy(dumpBuffer + offsetOffset, &offset, sizeof(uint32_t));
+					memcpy(dumpBuffer + sizeOffset, &size, sizeof(unsigned int));
+					memcpy(dumpBuffer + offsetOffset, &offset, sizeof(unsigned int));
 				}
 			}
 			else

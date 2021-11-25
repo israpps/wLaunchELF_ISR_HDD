@@ -369,7 +369,11 @@ int MenuParty(PARTYINFO Info)
 
 	if ((Info.Name[0] == '_') && (Info.Name[1] == '_')) {
 		enable[REMOVE] = FALSE;
-                enable[HEADER] = FALSE;
+		enable[HEADER] = FALSE;
+	}
+	if (strncmp("__.POPS",Info.Name,7)==0)
+	{
+		enable[REMOVE] = TRUE;
 	}
 	if (Info.Treatment == TREAT_SYSTEM) {
 		enable[REMOVE] = FALSE;

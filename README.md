@@ -1,7 +1,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cfd16b7321c34bc0b3f347caf585c7e9)](https://app.codacy.com/gh/israpps/wLaunchELF_ISR_HDD?utm_source=github.com&utm_medium=referral&utm_content=israpps/wLaunchELF_ISR_HDD&utm_campaign=Badge_Grade_Settings)
-[![CI](https://github.com/ps2homebrew/wLaunchELF/workflows/CI/badge.svg)](https://github.com/ps2homebrew/wLaunchELF/actions?query=workflow%3ACI)
 ![GitHub all releases](https://img.shields.io/github/downloads/israpps/wLaunchELF_ISR_HDD/total?logo=github)
-
+[![CI](https://github.com/israpps/wLaunchELF_ISR_HDD/actions/workflows/compilation.yml/badge.svg)](https://github.com/israpps/wLaunchELF_ISR_HDD/actions/workflows/compilation.yml)
 # WARNING
 ##### __THIS MOD IS INTENDED ONLY FOR APA HEADER INJECTIONS (HDD MANAGER), SINCE IT'S BASED ON LATEST wLaunchELF (UNSTABLE)__
 

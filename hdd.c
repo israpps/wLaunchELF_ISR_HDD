@@ -134,7 +134,7 @@ static inline int InstallMBRToHDD(FILE *file, void *IOBuffer, unsigned int size)
 	}
 
 	return result;
-
+}
 //------------------------------
 //endfunc InstallMBRToHDD
 //--------------------------------------------------------------

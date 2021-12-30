@@ -96,6 +96,48 @@ void DebugDispStat(iox_dirent_t *p)
 //------------------------------
 //endfunc DebugDispStat
 //--------------------------------------------------------------
+static inline int InstallMBRToHDD(FILE *file, void *IOBuffer, unsigned int size)
+{
+	hddSetOsdMBR_t OSDData;
+	unsigned short int NumSectorsToWrite, MBR_NumSectors, i;
+	iox_stat_t stat;
+	int result;
+	unsigned int MBR_Sector, remaining, tLengthBytes;
+
+	if((result=fileXioGetStat("hdd0:__mbr", &stat))>=0)
+	{
+		MBR_Sector=stat.private_5+0x2000;
+		MBR_NumSectors=((size+0x1FF)&~0x1FF)/512;
+
+		for(i=0,remaining = size; i<MBR_NumSectors && result >= 0; i+=NumSectorsToWrite,remaining-=tLengthBytes)
+		{
+			NumSectorsToWrite=((MBR_NumSectors-i)>MBR_WRITE_BLOCK_SIZE)?MBR_WRITE_BLOCK_SIZE:MBR_NumSectors-i;
+			tLengthBytes = remaining > (MBR_WRITE_BLOCK_SIZE * 512) ? (MBR_WRITE_BLOCK_SIZE * 512) : remaining;
+			((hddAtaTransfer_t *)IOBuffer)->lba=MBR_Sector+i;
+			((hddAtaTransfer_t *)IOBuffer)->size=NumSectorsToWrite;
+			if(fread(((hddAtaTransfer_t *)IOBuffer)->data, 1, tLengthBytes, file) == tLengthBytes)
+			{
+				if(MBR_WRITE_BLOCK_SIZE*512 - tLengthBytes > 0)
+					memset(((hddAtaTransfer_t *)IOBuffer)->data + tLengthBytes, 0, MBR_WRITE_BLOCK_SIZE*512 - tLengthBytes);
+				result = fileXioDevctl("hdd0:", APA_DEVCTL_ATA_WRITE, IOBuffer, MBR_WRITE_BLOCK_SIZE*512+sizeof(hddAtaTransfer_t), NULL, 0);
+			}
+			else
+				result = -EIO;
+		}
+
+		if(result>=0)
+		{
+			OSDData.start=MBR_Sector;
+			OSDData.size=MBR_NumSectors;
+			fileXioDevctl("hdd0:", APA_DEVCTL_SET_OSDMBR, &OSDData, sizeof(OSDData), NULL, 0);
+		}
+	}
+
+	return result;
+
+//------------------------------
+//endfunc InstallMBRToHDD
+//--------------------------------------------------------------
 void GetHddInfo(void)
 {
 	iox_dirent_t infoDirEnt;

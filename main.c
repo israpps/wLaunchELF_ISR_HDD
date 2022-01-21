@@ -318,6 +318,19 @@ static void Show_About_uLE(void)
 			sprintf(TextRow, " commit: %s (based on commit 41e4ebe)", GIT_HASH);
 			PrintPos(04, hpos, TextRow);
 			PrintPos(05, hpos, "Mod created by: Matias Israelson and alex parrado");
+			PrintPos(-1, hpos, "Build features:"
+#ifdef SMB
+" SMB:1"
+#else
+" SMB:0"
+#endif
+
+#ifdef ETH
+" ETH:1"
+#else
+" ETH:0"
+#endif	
+);
 			PrintPos(-1, hpos, "Project maintainers:  sp193 & AKuHAK");
 			PrintPos(-1, hpos, "  ");
 			PrintPos(-1, hpos, "uLaunchELF Project maintainers:");
@@ -329,12 +342,11 @@ static void Show_About_uLE(void)
 			PrintPos(-1, hpos, "  kthu, Slam-Tilt, chip, pixel, Hermes");
 			PrintPos(-1, hpos, "  and others in the PS2Dev community");
 			PrintPos(-1, hpos, " ");
-			PrintPos(-1, hpos, "Main release site:");
-			PrintPos(-1, hpos, "   github.com/AKuHAK/uLaunchELF/releases");
+			PrintPos(-1, hpos, "Official release site:");
+			PrintPos(-1, hpos, "   github.com/PS2Homebrew/uLaunchELF/releases");
 			PrintPos(-1, hpos, "Mod Release site:");
 			PrintPos(-1, hpos, "   github.com/israpps/wLaunchELF_ISR_HDD/releases");
-			PrintPos(-1, hpos, "Ancestral project: LaunchELF v3.41");
-			PrintPos(-1, hpos, "Created by:        Mirakichi");
+			PrintPos(-1, hpos, "Ancestral project: LaunchELF v3.41 by Mirakichi");
 		}  //ends if(event||post_event)
 		drawScr();
 		post_event = event;

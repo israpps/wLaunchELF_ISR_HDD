@@ -111,12 +111,12 @@ char cnfmode_extL[CNFMODE_CNT][4] = {
     "fnt",  // cnfmode FONT_CNF
     "*"     // cnfmode SAVE_CNF
 };
-
+#ifdef ETH
 int host_ready = 0;
 int host_error = 0;
 int host_elflist = 0;
 int host_use_Bsl = 1;  //By default assume that host paths use backslash
-
+#endif
 unsigned long written_size;  //Used for pasting progress report
 u64 PasteTime;               //Used for pasting progress report
 
@@ -1076,6 +1076,7 @@ exit:
 //------------------------------
 //endfunc readMASS
 //--------------------------------------------------------------
+#ifdef ETH
 char *makeHostPath(char *dp, char *sp)
 {
 	int i;
@@ -1095,6 +1096,7 @@ char *makeHostPath(char *dp, char *sp)
 	}
 	return dp;
 }
+#endif
 //--------------------------------------------------------------
 char *makeFslPath(char *dp, char *sp)
 {
@@ -1113,6 +1115,7 @@ char *makeFslPath(char *dp, char *sp)
 	return dp;
 }
 //--------------------------------------------------------------
+#ifdef ETH
 void initHOST(void)
 {
 	int fd;
@@ -1215,6 +1218,7 @@ int readHOST(const char *path, FILEINFO *info, int max)
 	strcpy(info[hostcount].name, "\0");
 	return hostcount;
 }
+#endif
 //------------------------------
 //endfunc readHOST
 //--------------------------------------------------------------
@@ -1231,8 +1235,10 @@ int getDir(const char *path, FILEINFO *info)
 		n = readMASS(path, info, max);
 	else if (!strncmp(path, "cdfs", 4))
 		n = readCD(path, info, max);
+#ifdef ETH
 	else if (!strncmp(path, "host", 4))
 		n = readHOST(path, info, max);
+#endif
 	else if (!strncmp(path, "vmc", 3))
 		n = readVMC(path, info, max);
 	else
@@ -1379,10 +1385,13 @@ int menu(const char *path, FILEINFO *file)
 
 	//identify cases where write access is illegal, and disable menu items accordingly
 	if ((!strncmp(path, "cdfs", 4))                           //Writing is always illegal for CDVD drive
+#ifdef ETH
 	    || ((!strncmp(path, "host", 4))                       //host: has special cases
 	        && ((!setting->HOSTwrite)                         //host: Writing is illegal if not enabled in CNF
 	            || (host_elflist && !strcmp(path, "host:/"))  //it's also illegal in elflist.txt
-	            )))
+	            ))
+#endif
+				)
 		write_disabled = 1;
 
 	if (!strcmp(path, "hdd0:/") || path[0] == 0)  //No menu cmds in partition/device lists
@@ -1721,9 +1730,10 @@ u64 getFileSize(const char *path, const FILEINFO *file)
 			dir[3] = ret + '0';
 		} else
 			sprintf(dir, "%s%s", path, file->name);
+#ifdef ETH
 		if (!strncmp(dir, "host:/", 6))
 			makeHostPath(dir + 5, dir + 6);
-
+#endif
 		fileXioGetStat(dir, &stat);
 		size = stat.size;
 	}
@@ -1790,9 +1800,10 @@ int delete (const char *path, const FILEINFO *file)
 	}
 	sprintf(dir, "%s%s", path, file->name);
 	genLimObjName(dir, 0);
+#ifdef ETH
 	if (!strncmp(dir, "host:/", 6))
 		makeHostPath(dir + 5, dir + 6);
-
+#endif
 	if (file->stats.AttrFile & sceMcFileAttrSubdir) {  //Is the object to delete a folder ?
 		strcat(dir, "/");
 		nfiles = getDir(dir, files);
@@ -1878,6 +1889,7 @@ int Rename(const char *path, const FILEINFO *file, const char *name)
 					ret = -EEXIST;
 			}
 		}
+#ifdef ETH
 	} else if (!strncmp(path, "host", 4)) {
 		int temp_fd;
 
@@ -1901,6 +1913,7 @@ int Rename(const char *path, const FILEINFO *file, const char *name)
 			}
 		} else  //This was neither a folder nor a file !!!
 			return -1;
+#endif
 	} else {  //For all other devices
 		sprintf(oldPath, "%s%s", path, file->name);
 		sprintf(newPath, "%s%s", path, name);
@@ -1947,8 +1960,10 @@ int newdir(const char *path, const char *name)
 		strcpy(dir, path);
 		strcat(dir, name);
 		genLimObjName(dir, 0);
+#ifdef ETH
 		if (!strncmp(dir, "host:/", 6))
 			makeHostPath(dir + 5, dir + 6);
+#endif
 		if ((ret = fileXioDopen(dir)) >= 0) {
 			fileXioDclose(ret);
 			ret = -EEXIST;  //return fileXio error code for pre-existing folder
@@ -2074,10 +2089,10 @@ restart_copy:  //restart point for PM_PSU_RESTORE to reprocess modified argument
 
 			genLimObjName(tmp, 4);  //Limit name to leave room for 4 characters more
 			strcat(tmp, ".psu");    //add the PSU file extension
-
+#ifdef ETH
 			if (!strncmp(tmp, "host:/", 6))
 				makeHostPath(tmp + 5, tmp + 6);
-
+#endif
 			if (setting->PSU_DateNames && setting->PSU_NoOverwrite) {
 				if (0 <= (out_fd = genOpen(tmp, O_RDONLY))) {  //Name conflict ?
 					genClose(out_fd);
@@ -2167,9 +2182,10 @@ restart_copy:  //restart point for PM_PSU_RESTORE to reprocess modified argument
 			}
 		} else if (PasteMode == PM_MC_RESTORE) {  //MC Restore mode folder paste preparation
 			sprintf(tmp, "%s/PS2_MC_Backup_Attributes.BUP.bin", in);
-
+#ifdef ETH
 			if (!strncmp(tmp, "host:/", 6))
 				makeHostPath(tmp + 5, tmp + 6);
+#endif
 			in_fd = genOpen(tmp, O_RDONLY);
 
 			if (in_fd >= 0) {
@@ -2293,21 +2309,29 @@ restart_copy:  //restart point for PM_PSU_RESTORE to reprocess modified argument
 				ret = MC_SFI;                                   //default request for changing entire mcTable
 				if (strncmp(in, "mc", 2)) {                     //Handle file copied from non-MC to MC
 					file.stats.AttrFile = MC_ATTR_norm_folder;  //normalize MC folder attribute
+#ifdef ETH
 					if (!strncmp(in, "host", 4)) {              //Handle folder copied from host: to MC
 						ret = 4;                                //request change only of main attribute for host:
 					}                                           //ends host: source clause
 				}                                               //ends non-MC source clause
+#endif
 				mcSetFileInfo(out[2] - '0', 0, &out[4], &file.stats, ret);
 				mcSync(0, NULL, &dummy);
 			} else {                                    //Handle folder copied to non-MC
+#ifdef ETH
 				if (!strncmp(out, "host", 4)) {         //for files copied to host: we skip Chstat
 				} else if (!strncmp(out, "mass", 4)) {  //for files copied to mass: we skip Chstat
+#else
+						if (!strncmp(out, "mass", 4)) {
+#endif
 				} else {                                //for other devices we use fileXio_ stuff
 					memcpy(iox_stat.ctime, (void *)&file.stats._Create, 8);
 					memcpy(iox_stat.mtime, (void *)&file.stats._Modify, 8);
 					memcpy(iox_stat.atime, iox_stat.mtime, 8);
 					ret = FIO_CST_CT | FIO_CST_AT | FIO_CST_MT;  //Request timestamp stat change
+#ifdef ETH
 					if (!strncmp(in, "host", 4)) {               //Handle folder copied from host:
+#endif
 						ret = 0;                                 //Request NO stat change
 					}
 					dummy = fileXioChStat(out, &iox_stat, ret);
@@ -2372,8 +2396,10 @@ non_PSU_RESTORE_init:
 		in_fd = PM_file[recurses];
 		size = mcT_head_p->size;
 	} else {  //Any other mode than PM_PSU_RESTORE
+#ifdef ETH
 		if (!strncmp(in, "host:/", 6))
 			makeHostPath(in + 5, in + 6);
+#endif
 		in_fd = genOpen(in, O_RDONLY);
 		if (in_fd < 0)
 			goto copy_file_exit;
@@ -2399,8 +2425,10 @@ non_PSU_RESTORE_init:
 			psu_pad_size = 0;
 		PSU_content++;  //Increase PSU content header count
 	} else {            //Any other PasteMode than PM_PSU_BACKUP needs a new output file
+#ifdef ETH
 		if (!strncmp(out, "host:/", 6))
 			makeHostPath(out + 5, out + 6);
+#endif
 		genLimObjName(out, 0);                                //Limit dest file name
 		genRemove(out);                                       //Remove old file if present
 		out_fd = genOpen(out, O_WRONLY | O_TRUNC | O_CREAT);  //Create new file
@@ -2420,8 +2448,10 @@ non_PSU_RESTORE_init:
 		                    //VMC contents should use the same size, as VMCs will often be stored on USB
 	else if (!strncmp(in, "mc", 2))
 		buffSize = 262144;  //Use 256KB if reading from MC (still pretty slow)
+#ifdef ETH
 	else if (!strncmp(out, "host", 4))
 		buffSize = 393216;  //Use 384KB if writing to HOST (acceptable)
+#endif
 	else if ((!strncmp(in, "mass", 4)) || (!strncmp(in, "host", 4)))
 		buffSize = 524288;  //Use 512KB reading from USB or HOST (acceptable)
 
@@ -2575,9 +2605,11 @@ non_PSU_RESTORE_init:
 		ret = MC_SFI;                                 //default request for changing entire mcTable
 		if (strncmp(in, "mc", 2)) {                   //Handle file copied from non-MC to MC
 			file.stats.AttrFile = MC_ATTR_norm_file;  //normalize MC file attribute
+#ifdef ETH
 			if (!strncmp(in, "host", 4)) {            //Handle folder copied from host: to MC
 				ret = 4;                              //request change only of main attribute for host:
 			}                                         //ends host: source clause
+#endif
 		}                                             //ends non-MC source clause
 		if (mctype_PSx == 2) {                        //if copying to a PS2 MC
 			mcSetFileInfo(out[2] - '0', 0, &out[4], &file.stats, ret);
@@ -2591,9 +2623,11 @@ non_PSU_RESTORE_init:
 			memcpy(iox_stat.mtime, (void *)&file.stats._Modify, 8);
 			memcpy(iox_stat.atime, iox_stat.mtime, 8);
 			ret = FIO_CST_CT | FIO_CST_AT | FIO_CST_MT;  //Request timestamp stat change
+#ifdef ETH
 			if (!strncmp(in, "host", 4)) {               //Handle file copied from host:
 				ret = 0;                                 //Request NO stat change
 			}
+#endif
 			dummy = fileXioChStat(out, &iox_stat, ret);
 		}
 	}
@@ -3066,8 +3100,10 @@ int setFileList(const char *path, const char *ext, FILEINFO *files, int cnfmode)
 		if (!cnfmode || (cnfmode == JPG_CNF)) {
 			//This condition blocks selecting any CONFIG items on PC
 			//or in a virtual memory card
+#ifdef ETH
 			strcpy(files[nfiles].name, "host:");
 			files[nfiles++].stats.AttrFile = sceMcFileAttrSubdir;
+#endif
 			if (vmcMounted[0]) {
 				strcpy(files[nfiles].name, "vmc0:");
 				files[nfiles++].stats.AttrFile = sceMcFileAttrSubdir;
@@ -3101,8 +3137,10 @@ int setFileList(const char *path, const char *ext, FILEINFO *files, int cnfmode)
 		files[nfiles++].stats.AttrFile = sceMcFileAttrFile;
 		strcpy(files[nfiles].name, LNG(PS2Disc));
 		files[nfiles++].stats.AttrFile = sceMcFileAttrFile;
+#ifdef ETH
 		strcpy(files[nfiles].name, LNG(PS2Net));
 		files[nfiles++].stats.AttrFile = sceMcFileAttrFile;
+#endif
 		strcpy(files[nfiles].name, LNG(PS2PowerOff));
 		files[nfiles++].stats.AttrFile = sceMcFileAttrFile;
 		strcpy(files[nfiles].name, LNG(HddManager));
@@ -3686,9 +3724,11 @@ int getFilePath(char *out, int cnfmode)
 						}
 						j = genFixPath(path, tmp1);
 						strcpy(tmp2, tmp1);
+#ifdef ETH
 						if (!strncmp(path, "host:", 5)) {
 							makeHostPath(tmp2, tmp1);
 						}
+#endif
 						strcat(tmp2, files[browser_sel].name);
 						if ((x = fileXioMount(tmp, tmp2, FIO_MT_RDWR)) >= 0) {
 							if ((j >= 0) && (j < MOUNT_LIMIT)) {

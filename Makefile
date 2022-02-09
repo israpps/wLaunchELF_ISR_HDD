@@ -7,8 +7,8 @@ EE_BIN = ULE_ISR_HDD-UNC.ELF
 EE_BIN_PKD = ULE_ISR_HDD.ELF
 EE_OBJS = main.o pad.o config.o elf.o draw.o loader_elf.o filer.o \
 	poweroff_irx.o iomanx_irx.o filexio_irx.o ps2atad_irx.o ps2dev9_irx.o\
-	ps2smap_irx.o ps2hdd_irx.o ps2fs_irx.o ps2netfs_irx.o usbd_irx.o usbhdfsd_irx.o mcman_irx.o mcserv_irx.o\
-	cdfs_irx.o ps2ftpd_irx.o ps2host_irx.o vmc_fs_irx.o ps2kbd_irx.o\
+	ps2hdd_irx.o ps2fs_irx.o usbd_irx.o usbhdfsd_irx.o mcman_irx.o mcserv_irx.o\
+	cdfs_irx.o vmc_fs_irx.o ps2kbd_irx.o\
 	hdd.o hdl_rpc.o hdl_info_irx.o editor.o timer.o jpgviewer.o icon.o lang.o\
 	font_uLE.o makeicon.o chkesr.o sior_irx.o allowdvdv_irx.o OSD/hddosd-headers.o
 	
@@ -17,7 +17,7 @@ ifeq ($(SMB),1)
 endif
 
 ifeq ($(ETH),1)
-	EE_OBJS += ps2ip_irx.o
+	EE_OBJS += ps2ip_irx.o ps2ftpd_irx.o ps2host_irx.o ps2smap_irx.o ps2netfs_irx.o
 	EE_CFLAGS += -DETH
 endif
 

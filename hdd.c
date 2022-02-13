@@ -948,6 +948,8 @@ void hddManager(void)
 					}
 				} else if (ret == WRITE_MBR) {
 					if (ynDialog(LNG(MBR_WARNING)) == 1) {
+						char msg[64];
+						sprintf(msg,"mass:/__Headers/MBR.KELF %s", LNG(is_Not_Found));
 						void *buffer;
 						if((buffer = memalign(64, IO_BLOCK_SIZE)) != NULL)
 						{
@@ -964,7 +966,7 @@ void hddManager(void)
 								{
 									if((InstallMBRToHDD(file, buffer, stat.size))<0) drawMsg(LNG(mbr_write_error)); else drawMsg(LNG(mbr_write_success));
 								} drawMsg(LNG(cant_open_mbr));
-							} else drawMsg("mass:/__Headers/MBR.KELF " LNG(is_Not_Found));
+							} else drawMsg(msg);
 						} else drawMsg("-ENOMEM");
 					}
 				} else if (ret == FORMAT) {

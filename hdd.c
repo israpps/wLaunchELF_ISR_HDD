@@ -898,28 +898,37 @@ void hddManager(void)
 						}
 					}
 				} else if (ret == HEADER) {
-					char msg[256];//thanks Alex parrado
-					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);
-					if (ynDialog(msg) == 1) {
-						header_info_t info;
-						char system_cnf_buffer[100];
-						char icon_sys_buffer[100];
-						char icon_icn_buffer[100];
-						char boot_kelf_buffer[100];						
-						char part_name_buffer[40];
-							sprintf(system_cnf_buffer, "mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
-							sprintf(icon_sys_buffer,   "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
-							sprintf(icon_icn_buffer,   "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);
-							sprintf(boot_kelf_buffer,   "mass:/__Headers/%s/boot.kelf", PartyInfo[browser_sel].Name);							
-							sprintf(part_name_buffer,  "hdd0:%s", PartyInfo[browser_sel].Name); 
+					if (new_pad & PAD_SQUARE) {
+						int fileMode = FIO_S_IRUSR | FIO_S_IWUSR | FIO_S_IXUSR | FIO_S_IRGRP | FIO_S_IWGRP | FIO_S_IXGRP | FIO_S_IROTH | FIO_S_IWOTH | FIO_S_IXOTH;
+						char dir[MAX_PATH];
+						strcpy(dir, "mass:/__Headers/");
+						strcat(dir, PartyInfo[browser_sel].Name);
+						genLimObjName(dir, 0);
+						fileXioMkdir(dir, fileMode);
+					}else{
+						char msg[256];//thanks Alex parrado
+						sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);
+						if (ynDialog(msg) == 1) {
+							header_info_t info;
+							char system_cnf_buffer[100];
+							char icon_sys_buffer[100];
+							char icon_icn_buffer[100];
+							char boot_kelf_buffer[100];						
+							char part_name_buffer[40];
+								sprintf(system_cnf_buffer, "mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
+								sprintf(icon_sys_buffer,   "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
+								sprintf(icon_icn_buffer,   "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);
+								sprintf(boot_kelf_buffer,   "mass:/__Headers/%s/boot.kelf", PartyInfo[browser_sel].Name);							
+								sprintf(part_name_buffer,  "hdd0:%s", PartyInfo[browser_sel].Name); 
+								
+								info.systemCnf = system_cnf_buffer;
+								info.iconSys   = icon_sys_buffer;
+								info.listIco   = icon_icn_buffer;
+								info.bootKelf  = boot_kelf_buffer;
+								info.partition = part_name_buffer;
 							
-							info.systemCnf = system_cnf_buffer;
-							info.iconSys   = icon_sys_buffer;
-							info.listIco   = icon_icn_buffer;
-							info.bootKelf  = boot_kelf_buffer;
-							info.partition = part_name_buffer;
-						
-						if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}
+							if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}
+						}
 					}
 				} else if (ret == FORMAT) {
 					if (ynDialog(LNG(Format_HDD)) == 1) {

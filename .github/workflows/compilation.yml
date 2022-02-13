@@ -23,12 +23,20 @@ jobs:
     - name: Install ps2eth
       run: |
         git clone https://github.com/ps2dev/ps2eth.git
-        cd ps2eth && make clean all install
+        cd ps2eth
+        make clean all install
 
-    - name: Compile wLaunchELF
+    - name: Compile wLaunchELF without network
       run: |
-        make
-    
+        make clean all ETH=0
+        cp ULE_ISR_HDD.ELF ULE_ISR_HDD_NO-NETWORK.ELF
+        cp ULE_ISR_HDD-UNC.ELF ULE_ISR_HDD-UNC_NO-NETWORK.ELF
+
+    - name: Compile wLaunchELF with network
+      run: |
+        make clean
+        make ETH=1
+
     - name: Get short SHA
       id: slug
       run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"

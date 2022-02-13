@@ -32,6 +32,7 @@ enum {  //For menu commands
 	RENAME,
 	EXPAND,
 	HEADER,
+	WRITE_MBR,
 	FORMAT,
 	NUM_MENU
 };
@@ -95,6 +96,48 @@ void DebugDispStat(iox_dirent_t *p)
 //*/
 //------------------------------
 //endfunc DebugDispStat
+//--------------------------------------------------------------
+static inline int InstallMBRToHDD(FILE *file, void *IOBuffer, unsigned int size) //COPIED FROM FREEMCBOOT 1.966 INSTALLER, THANKS SP193 FOR ALL THAT YOU HAVE DONE FOR THE PS2 COMMUNITY,
+{/// BTW... IF YOU ARE READING THIS.... RELEASE FREEMCBOOT SOURCE CODE!
+	hddSetOsdMBR_t OSDData;
+	unsigned short int NumSectorsToWrite, MBR_NumSectors, i;
+	iox_stat_t stat;
+	int result;
+	unsigned int MBR_Sector, remaining, tLengthBytes;
+
+	if((result=fileXioGetStat("hdd0:__mbr", &stat))>=0)
+	{
+		MBR_Sector=stat.private_5+0x2000;
+		MBR_NumSectors=((size+0x1FF)&~0x1FF)/512;
+
+		for(i=0,remaining = size; i<MBR_NumSectors && result >= 0; i+=NumSectorsToWrite,remaining-=tLengthBytes)
+		{
+			NumSectorsToWrite=((MBR_NumSectors-i)>MBR_WRITE_BLOCK_SIZE)?MBR_WRITE_BLOCK_SIZE:MBR_NumSectors-i;
+			tLengthBytes = remaining > (MBR_WRITE_BLOCK_SIZE * 512) ? (MBR_WRITE_BLOCK_SIZE * 512) : remaining;
+			((hddAtaTransfer_t *)IOBuffer)->lba=MBR_Sector+i;
+			((hddAtaTransfer_t *)IOBuffer)->size=NumSectorsToWrite;
+			if(fread(((hddAtaTransfer_t *)IOBuffer)->data, 1, tLengthBytes, file) == tLengthBytes)
+			{
+				if(MBR_WRITE_BLOCK_SIZE*512 - tLengthBytes > 0)
+					memset(((hddAtaTransfer_t *)IOBuffer)->data + tLengthBytes, 0, MBR_WRITE_BLOCK_SIZE*512 - tLengthBytes);
+				result = fileXioDevctl("hdd0:", APA_DEVCTL_ATA_WRITE, IOBuffer, MBR_WRITE_BLOCK_SIZE*512+sizeof(hddAtaTransfer_t), NULL, 0);
+			}
+			else
+				result = -EIO;
+		}
+
+		if(result>=0)
+		{
+			OSDData.start=MBR_Sector;
+			OSDData.size=MBR_NumSectors;
+			fileXioDevctl("hdd0:", APA_DEVCTL_SET_OSDMBR, &OSDData, sizeof(OSDData), NULL, 0);
+		}
+	}
+
+	return result;
+}
+//------------------------------
+//endfunc InstallMBRToHDD
 //--------------------------------------------------------------
 void GetHddInfo(void)
 {
@@ -353,6 +396,7 @@ int MenuParty(PARTYINFO Info)
 	menu_len = strlen(LNG(Rename)) > menu_len ? strlen(LNG(Rename)) : menu_len;
 	menu_len = strlen(LNG(Expand)) > menu_len ? strlen(LNG(Expand)) : menu_len;
 	menu_len = strlen(LNG(Format)) > menu_len ? strlen(LNG(Format)) : menu_len;
+	menu_len = strlen(LNG(install_mbr)) > menu_len ? strlen(LNG(install_mbr)) : menu_len;
 
 	int menu_ch_w = menu_len + 1;                                 //Total characters in longest menu string
 	int menu_ch_h = NUM_MENU;                                     //Total number of menu lines
@@ -371,6 +415,7 @@ int MenuParty(PARTYINFO Info)
 		enable[REMOVE] = FALSE;
                 enable[HEADER] = FALSE;
 	}
+	if (!strcmp(Info.Name,"__mbr")) enable[WRITE_MBR] = TRUE; else enable[WRITE_MBR] = FALSE;
 	if (Info.Treatment == TREAT_SYSTEM) {
 		enable[REMOVE] = FALSE;
 		enable[RENAME] = FALSE;
@@ -443,6 +488,8 @@ int MenuParty(PARTYINFO Info)
 					strcpy(tmp, "Inject");
 				else if (i == FORMAT)
 					strcpy(tmp, LNG(Format));
+				else if (i == WRITE_MBR)
+					strcpy(tmp, LNG(install_mbr));
 
 				if (enable[i])
 					color = setting->color[COLOR_TEXT];
@@ -473,6 +520,10 @@ int MenuParty(PARTYINFO Info)
 				             "1:%s \xFF"
 				             "3:%s",
 				        LNG(OK), LNG(Cancel), LNG(Back));
+			if (sel == HEADER)
+				sprintf(tmp + strlen(tmp), " \xFF"
+				                           "2:%s",
+								LNG(Create_Header_Folder));
 			printXY(tmp, x, y, setting->color[COLOR_SELECT], TRUE, 0);
 		}  //ends if(event||post_event)
 		drawScr();
@@ -856,28 +907,67 @@ void hddManager(void)
 						}
 					}
 				} else if (ret == HEADER) {
-					char msg[256];//thanks Alex parrado
-					sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);
-					if (ynDialog(msg) == 1) {
-						header_info_t info;
-						char system_cnf_buffer[100];
-						char icon_sys_buffer[100];
-						char icon_icn_buffer[100];
-						char boot_kelf_buffer[100];						
-						char part_name_buffer[40];
-							sprintf(system_cnf_buffer, "mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
-							sprintf(icon_sys_buffer,   "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
-							sprintf(icon_icn_buffer,   "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);
-							sprintf(boot_kelf_buffer,   "mass:/__Headers/%s/boot.kelf", PartyInfo[browser_sel].Name);							
-							sprintf(part_name_buffer,  "hdd0:%s", PartyInfo[browser_sel].Name); 
+					if (new_pad & PAD_SQUARE) {
+						int fileMode = FIO_S_IRUSR | FIO_S_IWUSR | FIO_S_IXUSR | FIO_S_IRGRP | FIO_S_IWGRP | FIO_S_IXGRP | FIO_S_IROTH | FIO_S_IWOTH | FIO_S_IXOTH;
+						char dir[MAX_PATH];
+						strcpy(dir, "mass:/__Headers/");
+						strcat(dir, PartyInfo[browser_sel].Name);
+						genLimObjName(dir, 0);
+						fileXioMkdir(dir, fileMode);
+							if (ret == -17) {
+								drawMsg(LNG(directory_already_exists));
+							} else if (ret < 0) {
+								drawMsg(LNG(NewDir_Failed));
+							} else {  //dlanor: modified for similarity to PC browsers
+								drawMsg(LNG(Created_folder));
+							}
+					}else{
+						char msg[256];//thanks Alex parrado
+						sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);
+						if (ynDialog(msg) == 1) {
+							header_info_t info;
+							char system_cnf_buffer[100];
+							char icon_sys_buffer[100];
+							char icon_icn_buffer[100];
+							char boot_kelf_buffer[100];						
+							char part_name_buffer[40];
+								sprintf(system_cnf_buffer, "mass:/__Headers/%s/system.cnf", PartyInfo[browser_sel].Name);
+								sprintf(icon_sys_buffer,   "mass:/__Headers/%s/icon.sys", PartyInfo[browser_sel].Name);
+								sprintf(icon_icn_buffer,   "mass:/__Headers/%s/list.ico", PartyInfo[browser_sel].Name);
+								sprintf(boot_kelf_buffer,   "mass:/__Headers/%s/boot.kelf", PartyInfo[browser_sel].Name);							
+								sprintf(part_name_buffer,  "hdd0:%s", PartyInfo[browser_sel].Name); 
+								
+								info.systemCnf = system_cnf_buffer;
+								info.iconSys   = icon_sys_buffer;
+								info.listIco   = icon_icn_buffer;
+								info.bootKelf  = boot_kelf_buffer;
+								info.partition = part_name_buffer;
 							
-							info.systemCnf = system_cnf_buffer;
-							info.iconSys   = icon_sys_buffer;
-							info.listIco   = icon_icn_buffer;
-							info.bootKelf  = boot_kelf_buffer;
-							info.partition = part_name_buffer;
-						
-						if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}
+							if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}
+						}
+					}
+				} else if (ret == WRITE_MBR) {
+					if (ynDialog(LNG(MBR_WARNING)) == 1) {
+						char msg[64];
+						sprintf(msg,"mass:/__Headers/MBR.KELF %s", LNG(is_Not_Found));
+						void *buffer;
+						if((buffer = memalign(64, IO_BLOCK_SIZE)) != NULL)
+						{
+							const char* MBR_PATH = "mass:/__Headers/MBR.KELF";
+							int fdn;
+							fdn = open(MBR_PATH, O_RDONLY);
+							if (!fdn < 0)
+							{
+								close(fdn);
+								iox_stat_t stat;
+								fileXioGetStat(MBR_PATH, &stat);
+								FILE* file;
+								if((file = fopen(MBR_PATH, "rb")) != NULL)
+								{
+									if((InstallMBRToHDD(file, buffer, stat.size))<0) drawMsg(LNG(mbr_write_error)); else drawMsg(LNG(mbr_write_success));
+								} drawMsg(LNG(cant_open_mbr));
+							} else drawMsg(msg);
+						} else drawMsg("-ENOMEM");
 					}
 				} else if (ret == FORMAT) {
 					if (ynDialog(LNG(Format_HDD)) == 1) {

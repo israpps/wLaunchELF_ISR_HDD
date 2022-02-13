@@ -328,3 +328,10 @@ lang(326, HDD_Information_Read_Overflow, "HDD Information Read (truncated)")
 lang(327, time_manip, "Fortuna Date")
 lang(328, change_timestamp_of, "change timestamp of:")
 lang(329, Create_Header_Folder, "Create Folder")
+
+lang(330, cant_open_mbr, "Can't Open MBR")
+lang(331, mbr_write_error, "Error Installing MBR")
+lang(332, mbr_write_success, "MBR successfully written")
+
+lang(333, install_mbr, "install MBR")
+lang(334, MBR_WARNING, "Install mass:/__Headers/MBR.KELF into __mbr partition?\n\nThis will replace the program that the console executes when it detects the HDD durint start")

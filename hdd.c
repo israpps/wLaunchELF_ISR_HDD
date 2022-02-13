@@ -32,6 +32,7 @@ enum {  //For menu commands
 	RENAME,
 	EXPAND,
 	HEADER,
+	WRITE_MBR,
 	FORMAT,
 	NUM_MENU
 };
@@ -96,8 +97,8 @@ void DebugDispStat(iox_dirent_t *p)
 //------------------------------
 //endfunc DebugDispStat
 //--------------------------------------------------------------
-static inline int InstallMBRToHDD(FILE *file, void *IOBuffer, unsigned int size)
-{
+static inline int InstallMBRToHDD(FILE *file, void *IOBuffer, unsigned int size) //COPIED FROM FREEMCBOOT 1.966 INSTALLER, THANKS SP193 FOR ALL THAT YOU HAVE DONE FOR THE PS2 COMMUNITY,
+{/// BTW... IF YOU ARE READING THIS.... RELEASE FREEMCBOOT SOURCE CODE!
 	hddSetOsdMBR_t OSDData;
 	unsigned short int NumSectorsToWrite, MBR_NumSectors, i;
 	iox_stat_t stat;
@@ -395,6 +396,7 @@ int MenuParty(PARTYINFO Info)
 	menu_len = strlen(LNG(Rename)) > menu_len ? strlen(LNG(Rename)) : menu_len;
 	menu_len = strlen(LNG(Expand)) > menu_len ? strlen(LNG(Expand)) : menu_len;
 	menu_len = strlen(LNG(Format)) > menu_len ? strlen(LNG(Format)) : menu_len;
+	menu_len = strlen(LNG(install_mbr)) > menu_len ? strlen(LNG(install_mbr)) : menu_len;
 
 	int menu_ch_w = menu_len + 1;                                 //Total characters in longest menu string
 	int menu_ch_h = NUM_MENU;                                     //Total number of menu lines
@@ -413,6 +415,7 @@ int MenuParty(PARTYINFO Info)
 		enable[REMOVE] = FALSE;
                 enable[HEADER] = FALSE;
 	}
+	if (!strcmp(Info.Name,"__mbr")) enable[WRITE_MBR] = TRUE; else enable[WRITE_MBR] = FALSE;
 	if (Info.Treatment == TREAT_SYSTEM) {
 		enable[REMOVE] = FALSE;
 		enable[RENAME] = FALSE;
@@ -485,6 +488,8 @@ int MenuParty(PARTYINFO Info)
 					strcpy(tmp, "Inject");
 				else if (i == FORMAT)
 					strcpy(tmp, LNG(Format));
+				else if (i == WRITE_MBR)
+					strcpy(tmp, LNG(install_mbr));
 
 				if (enable[i])
 					color = setting->color[COLOR_TEXT];
@@ -940,6 +945,27 @@ void hddManager(void)
 							
 							if (WriteAPAHeader(info) < 0) {drawMsg("injection succeded");} else {drawMsg("injection failed");}
 						}
+					}
+				} else if (ret == WRITE_MBR) {
+					if (ynDialog(LNG(MBR_WARNING)) == 1) {
+						void *buffer;
+						if((buffer = memalign(64, IO_BLOCK_SIZE)) != NULL)
+						{
+							const char* MBR_PATH = "mass:/__Headers/MBR.KELF";
+							int fdn;
+							fdn = open(MBR_PATH, O_RDONLY);
+							if (!fdn < 0)
+							{
+								close(fdn);
+								iox_stat_t stat;
+								fileXioGetStat(MBR_PATH, &stat);
+								FILE* file;
+								if((file = fopen(MBR_PATH, "rb")) != NULL)
+								{
+									if((InstallMBRToHDD(file, buffer, size))<0) drawMsg(LNG(mbr_write_error)); else drawMsg(LNG(mbr_write_success));
+								} drawMsg(LNG(cant_open_mbr));
+							} else drawMsg("mass:/__Headers/MBR.KELF " LNG(is_Not_Found));
+						} else drawMsg("-ENOMEM");
 					}
 				} else if (ret == FORMAT) {
 					if (ynDialog(LNG(Format_HDD)) == 1) {

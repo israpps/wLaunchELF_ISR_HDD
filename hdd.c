@@ -515,6 +515,10 @@ int MenuParty(PARTYINFO Info)
 				             "1:%s \xFF"
 				             "3:%s",
 				        LNG(OK), LNG(Cancel), LNG(Back));
+			if (sel == HEADER)
+				sprintf(tmp + strlen(tmp), " \xFF"
+				                           "2:%s",
+								LNG(Create_Header_Folder));
 			printXY(tmp, x, y, setting->color[COLOR_SELECT], TRUE, 0);
 		}  //ends if(event||post_event)
 		drawScr();
@@ -905,6 +909,13 @@ void hddManager(void)
 						strcat(dir, PartyInfo[browser_sel].Name);
 						genLimObjName(dir, 0);
 						fileXioMkdir(dir, fileMode);
+							if (ret == -17) {
+								drawMsg(LNG(directory_already_exists));
+							} else if (ret < 0) {
+								drawMsg(LNG(NewDir_Failed));
+							} else {  //dlanor: modified for similarity to PC browsers
+								drawMsg(LNG(Created_folder));
+							}
 					}else{
 						char msg[256];//thanks Alex parrado
 						sprintf(msg,"Inject selected partition?\ndata will be retrieved from:\n mass:/__Headers/%s/",PartyInfo[browser_sel].Name);

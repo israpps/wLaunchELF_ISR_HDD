@@ -962,7 +962,7 @@ void hddManager(void)
 								FILE* file;
 								if((file = fopen(MBR_PATH, "rb")) != NULL)
 								{
-									if((InstallMBRToHDD(file, buffer, size))<0) drawMsg(LNG(mbr_write_error)); else drawMsg(LNG(mbr_write_success));
+									if((InstallMBRToHDD(file, buffer, stat.size))<0) drawMsg(LNG(mbr_write_error)); else drawMsg(LNG(mbr_write_success));
 								} drawMsg(LNG(cant_open_mbr));
 							} else drawMsg("mass:/__Headers/MBR.KELF " LNG(is_Not_Found));
 						} else drawMsg("-ENOMEM");

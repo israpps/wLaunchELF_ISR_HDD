@@ -5,7 +5,7 @@
 
 #define ULE_VERSION "v4.43x_isr_hdd"
 #define MBR_WRITE_BLOCK_SIZE	2
-
+#define IO_BLOCK_SIZE	(256*512)
 //#ifndef ULE_VERDATE
 //#define ULE_VERDATE __DATE__
 //#endif
